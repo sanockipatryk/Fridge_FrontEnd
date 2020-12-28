@@ -26,7 +26,6 @@ const EditRecipePage = () => {
   );
 
   let location = useLocation();
-  console.log(location);
   const { recipe } = location?.state;
 
   const [name, setName] = React.useState(recipe?.name);
@@ -49,7 +48,6 @@ const EditRecipePage = () => {
       let quantities = [];
 
       currentIngredients.forEach((i, index) => {
-        console.log(i);
         ingredientCategories.push({ id: index, category: i.categoryId });
         ingredients.push({ id: index, ingredient: i.ingredientId });
         quantities.push({ id: index, quantity: i.quantity });
@@ -70,10 +68,8 @@ const EditRecipePage = () => {
       cookingTime: parseInt(cookingTime),
       ingredients: [...prepareIngredients(ingredient, quantity)],
     };
-    console.log(requestData);
     axios
       .put("https://localhost:44356/api/Recipes/editRecipe", requestData)
-      .then((response) => console.log(response))
       .then(() => toast.success(recipeEditedSuccess))
       .then(() => setRecipeAdded(true))
       .catch((err) => toast.error(recipeEditedError));

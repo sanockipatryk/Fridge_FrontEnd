@@ -32,7 +32,6 @@ const FridgesPage = () => {
   const handleDeleteRecipe = (id) => () => {
     axios
       .delete(`https://localhost:44356/api/Fridges/deleteFridge/${id}`)
-      .then((response) => console.log(response))
       .then(() =>
         dispatch(setUserFridges(fridgesList.filter((f) => f.id !== id)))
       )

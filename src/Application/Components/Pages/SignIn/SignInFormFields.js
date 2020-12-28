@@ -1,31 +1,35 @@
 import React, { Fragment } from "react";
 import InputField from "../../Reusable/BasicInputField";
 
-const SignInFormFields = ({ values, userSigningIn, handleSetValue }) => {
+const SignInFormFields = ({
+  inputState,
+  isLoading,
+  handleSetValue,
+  handleOnBlur,
+}) => {
+  const { values, touched, errors } = inputState;
   return (
     <Fragment>
       <InputField
-        value={values.eMail}
+        value={values?.eMail}
+        touched={touched?.eMail}
+        error={errors?.eMail}
         onChange={handleSetValue}
+        handleOnBlur={handleOnBlur}
         name="eMail"
         label="E-mail address"
-        disabled={userSigningIn}
+        disabled={isLoading}
       />
       <InputField
-        value={values.password}
+        value={values?.password}
+        touched={touched?.password}
+        error={errors?.password}
         onChange={handleSetValue}
+        handleOnBlur={handleOnBlur}
         name="password"
         label="Password"
         type="password"
-        disabled={userSigningIn}
-      />
-      <InputField
-        value={values.confirmPassword}
-        onChange={handleSetValue}
-        name="confirmPassword"
-        label="Confirm password"
-        type="password"
-        disabled={userSigningIn}
+        disabled={isLoading}
       />
     </Fragment>
   );

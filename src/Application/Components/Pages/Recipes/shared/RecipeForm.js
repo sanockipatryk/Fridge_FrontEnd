@@ -29,7 +29,6 @@ const RecipeForm = ({
   elementAdded,
   history,
 }) => {
-  console.log(children);
   const classes = addRecipeStyles();
   return (
     <Grid container item xs={12} justify="center" alignItems="center">

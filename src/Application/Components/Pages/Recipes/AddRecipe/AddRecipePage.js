@@ -66,7 +66,6 @@ const AddRecipePage = () => {
       cookingTime: parseInt(cookingTime),
       ingredients: [...prepareIngredients(ingredient, quantity)],
     };
-    console.log(requestData);
     axios
       .post("https://localhost:44356/api/Recipes/createRecipe", requestData)
       .then((response) => console.log(response))

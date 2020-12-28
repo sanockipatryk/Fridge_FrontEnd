@@ -1,5 +1,5 @@
-import { Grid, TextField } from "@material-ui/core";
 import React from "react";
+import { Grid, TextField } from "@material-ui/core";
 import useStyles from "./Styles";
 
 const InputField = ({
@@ -13,8 +13,9 @@ const InputField = ({
   fullWidth = true,
   additionalClass = null,
   disabled = false,
-  error = false,
-  helperText = null,
+  error = null,
+  touched,
+  handleOnBlur = null,
 }) => {
   const classes = useStyles();
   return (
@@ -31,8 +32,9 @@ const InputField = ({
         rows={rows}
         fullWidth={fullWidth}
         disabled={disabled}
-        error={error}
-        helperText={helperText}
+        error={error && touched}
+        helperText={error && touched ? error : null}
+        onBlur={handleOnBlur}
       />
     </Grid>
   );

@@ -43,10 +43,8 @@ const AddFridgePage = () => {
           ? [...prepareIngredients(ingredient, quantity)]
           : [],
     };
-    console.log(requestData);
     axios
       .post("https://localhost:44356/api/Fridges/createFridge", requestData)
-      .then((response) => console.log(response))
       .then(() => toast.success(fridgeAddedSuccess))
       .then(() => setFridgeAdded(true))
       .catch((err) => toast.error(fridgeAddedError));

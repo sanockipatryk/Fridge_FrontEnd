@@ -2,53 +2,64 @@ import React, { Fragment } from "react";
 import InputField from "../../Reusable/BasicInputField";
 
 const SignUpFormFields = ({
-  values,
-  firstName,
-  lastName,
-  eMail,
-  password,
-  confirmPassword,
-  userSigningUp,
+  inputState,
+  isLoading,
   handleSetValue,
+  handleOnBlur,
 }) => {
+  const { values, touched, errors } = inputState;
   return (
     <Fragment>
       <InputField
-        value={values.firstName}
+        value={values?.firstName}
+        touched={touched?.firstName}
+        error={errors?.firstName}
         onChange={handleSetValue}
         name="firstName"
         label="First name"
-        disabled={userSigningUp}
+        disabled={isLoading}
       />
       <InputField
-        value={values.lastName}
+        value={values?.lastName}
+        touched={touched?.lastName}
+        error={errors?.lastName}
         onChange={handleSetValue}
+        handleOnBlur={handleOnBlur}
         name="lastName"
         label="Last name"
-        disabled={userSigningUp}
+        disabled={isLoading}
       />
       <InputField
-        value={values.eMail}
+        value={values?.eMail}
+        touched={touched?.eMail}
+        error={errors?.eMail}
         onChange={handleSetValue}
+        handleOnBlur={handleOnBlur}
         name="eMail"
         label="E-mail address"
-        disabled={userSigningUp}
+        disabled={isLoading}
       />
       <InputField
-        value={values.password}
+        value={values?.password}
+        touched={touched?.password}
+        error={errors?.password}
         onChange={handleSetValue}
+        handleOnBlur={handleOnBlur}
         name="password"
         label="Password"
         type="password"
-        disabled={userSigningUp}
+        disabled={isLoading}
       />
       <InputField
-        value={values.confirmPassword}
+        value={values?.confirmPassword}
+        touched={touched?.confirmPassword}
+        error={errors?.confirmPassword}
         onChange={handleSetValue}
+        handleOnBlur={handleOnBlur}
         name="confirmPassword"
         label="Confirm password"
         type="password"
-        disabled={userSigningUp}
+        disabled={isLoading}
       />
     </Fragment>
   );

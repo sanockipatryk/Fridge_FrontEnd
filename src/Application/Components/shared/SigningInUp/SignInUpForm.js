@@ -1,6 +1,5 @@
-import { Button, Grid, makeStyles, Paper } from "@material-ui/core";
 import React from "react";
-import InputField from "../../Reusable/BasicInputField";
+import { Button, Grid, makeStyles, Paper } from "@material-ui/core";
 import CircularProgressForButton from "../../Reusable/CircularProgressForButton";
 
 const useStyles = makeStyles((theme) => ({
@@ -16,7 +15,12 @@ const SignInUpForm = ({ children, handleForm, isLoading, submitText }) => {
     <Grid container item xs={2}>
       <Paper elevation={3} className={classes.SignInPaper}>
         <Grid container item xs={12} justify="center">
-          <form autoComplete="off" onSubmit={handleForm}>
+          <form
+            autoComplete="off"
+            onSubmit={handleForm}
+            style={{ width: "100%" }}
+            noValidate
+          >
             {children}
             <Grid container item xs={12} justify="flex-end">
               {isLoading ? (
