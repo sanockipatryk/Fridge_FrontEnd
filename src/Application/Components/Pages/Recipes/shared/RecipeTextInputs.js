@@ -2,27 +2,23 @@ import React, { Fragment } from "react";
 import InputField from "../../../Reusable/BasicInputField";
 import { addRecipeStyles } from "../RecipesPageStyles";
 
-const RecipeTextInputs = ({
-  name,
-  description,
-  cookingTime,
-  handleSetValue,
-}) => {
+const RecipeTextInputs = ({ inputState, handleSetValue }) => {
   const classes = addRecipeStyles();
+  const { name, cookingTime, description } = inputState;
   return (
     <Fragment>
       <div className={classes.IngredientRow}>
         <InputField
           value={name}
           onChange={handleSetValue}
-          name="Name"
+          name="name"
           label="Recipe name"
           additionalClass={classes.RecipeNameInput}
         />
         <InputField
           value={cookingTime}
           onChange={handleSetValue}
-          name="CookingTime"
+          name="cookingTime"
           label="Cooking time (min)"
           type="number"
           additionalClass={classes.RecipeCookingTimeInput}
@@ -33,7 +29,7 @@ const RecipeTextInputs = ({
         onChange={handleSetValue}
         multiline
         rows={4}
-        name="Description"
+        name="description"
         label="Description"
       />
     </Fragment>

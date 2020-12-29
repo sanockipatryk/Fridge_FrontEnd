@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import axios from "axios";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
@@ -15,7 +15,7 @@ import {
   handleAddNextIngredient,
   prepareIngredients,
 } from "../../Recipes/shared/recipeFormsFunctions";
-import { handleSetValue } from "../shared/fridgeFormsFunctions";
+import { handleSetValue } from "../../Recipes/shared/recipeFormsFunctions";
 import FridgeTextInputs from "../shared/FridgeTextInputs";
 
 const AddFridgePage = () => {
@@ -24,24 +24,23 @@ const AddFridgePage = () => {
     (state) => state.ingredients
   );
 
-  const [name, setName] = React.useState("Pantry stock");
-  const [description, setDescription] = React.useState(
-    "All of the food products left in my pantry"
-  );
-  const [ingredientCategory, setIngredientCategory] = React.useState([]);
-  const [ingredient, setIngredient] = React.useState([]);
-  const [quantity, setQuantity] = React.useState([]);
+  const initialInputState = {
+    name: "",
+    description: "",
+    ingredients: [],
+  };
+
   const [fridgeAdded, setFridgeAdded] = React.useState(false);
+  const [inputState, setInputState] = React.useState(initialInputState);
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    const { name, description, ingredients } = inputState;
     const requestData = {
       name: name,
       description: description,
       ingredients:
-        ingredient.length > 0
-          ? [...prepareIngredients(ingredient, quantity)]
-          : [],
+        ingredients?.length > 0 ? [...prepareIngredients(ingredients)] : [],
     };
     axios
       .post("https://localhost:44356/api/Fridges/createFridge", requestData)
@@ -52,49 +51,35 @@ const AddFridgePage = () => {
 
   return (
     <RecipeForm
+      inputState={inputState}
       formType="fridge"
       action="add"
       ingredientsList={ingredientsList}
       ingredientsCategoriesList={ingredientsCategoriesList}
       handleSubmit={handleSubmit}
-      //   handleSetValue={handleSetValue(setName, setDescription)}
-      ingredient={ingredient}
-      handleSetIngredient={handleSetIngredient(ingredient, setIngredient)}
-      ingredientCategory={ingredientCategory}
+      handleSetIngredient={handleSetIngredient(inputState, setInputState)}
       handleSetIngredientCategory={handleSetIngredientCategory(
-        ingredientCategory,
-        ingredient,
-        ingredientsList,
-        setIngredient,
-        setIngredientCategory
+        inputState,
+        setInputState,
+        ingredientsList
       )}
-      quantity={quantity}
-      handleSetQuantity={handleSetQuantity(quantity, setQuantity)}
+      handleSetQuantity={handleSetQuantity(inputState, setInputState)}
       handleRemoveIngredientFromList={handleRemoveIngredientFromList(
-        ingredientCategory,
-        ingredient,
-        quantity,
-        setIngredientCategory,
-        setIngredient,
-        setQuantity
+        inputState,
+        setInputState
       )}
       handleAddNextIngredient={handleAddNextIngredient(
-        ingredient,
-        ingredientCategory,
-        quantity,
+        inputState,
+        setInputState,
         ingredientsCategoriesList,
-        ingredientsList,
-        setIngredientCategory,
-        setIngredient,
-        setQuantity
+        ingredientsList
       )}
       isAuthenticated={isAuthenticated}
       elementAdded={fridgeAdded}
     >
       <FridgeTextInputs
-        name={name}
-        description={description}
-        handleSetValue={handleSetValue(setName, setDescription)}
+        inputState={inputState}
+        handleSetValue={handleSetValue(inputState, setInputState)}
       />
     </RecipeForm>
   );

@@ -5,7 +5,6 @@ import {
   FRIDGES,
   HOME,
   LOGIN,
-  LOGOUT,
   RECIPES,
   REGISTER,
 } from "../../../SSOT/navPaths";
@@ -15,7 +14,6 @@ import setAuthorizationToken from "../../../../config/tokenHelpers";
 import { requestLogout } from "../../../../store/actions/signIn";
 import { toast } from "react-toastify";
 import { logoutInfo } from "../../../SSOT/toastMessages";
-import { getUserFridges } from "../../../../store/actions/fridges";
 
 const Header = () => {
   const classes = useStyles();

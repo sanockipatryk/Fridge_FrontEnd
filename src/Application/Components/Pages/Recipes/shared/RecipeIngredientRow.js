@@ -12,25 +12,24 @@ import { addRecipeStyles } from "../RecipesPageStyles";
 
 const RecipeIngredientRow = ({
   index,
+  itemState,
   formType,
-  ingredient,
-  handleSetIngredient,
   ingredientsList,
-  ingredientCategory,
-  handleSetIngredientCategory,
   ingredientsCategoriesList,
-  quantity,
+  handleSetIngredient,
+  handleSetIngredientCategory,
   handleSetQuantity,
   handleRemoveIngredientFromList,
 }) => {
   const classes = addRecipeStyles();
+  const { id, ingredientCategoryId, ingredientId, quantity } = itemState;
   return (
     <div className={classes.IngredientRow}>
       {formType === "fridge" || index > 0 ? (
         <Button
           className={classes.RemoveIngredientButton}
           variant="contained"
-          onClick={() => handleRemoveIngredientFromList(ingredient.id)}
+          onClick={() => handleRemoveIngredientFromList(id)}
         >
           <RemoveIcon className={classes.RemoveIngredientIcon} />
         </Button>
@@ -42,10 +41,8 @@ const RecipeIngredientRow = ({
         <Select
           labelId="IngredientCategoryLabel"
           id="Ingredient category"
-          value={ingredientCategory.category}
-          onChange={(e) =>
-            handleSetIngredientCategory(e, ingredientCategory.id)
-          }
+          value={ingredientCategoryId}
+          onChange={(e) => handleSetIngredientCategory(e, id)}
           label="Ingredient category"
         >
           {ingredientsCategoriesList.map((category) => (
@@ -60,14 +57,13 @@ const RecipeIngredientRow = ({
         <Select
           labelId="IngredientLabel"
           id="Ingredient"
-          value={ingredient.ingredient}
-          onChange={(e) => handleSetIngredient(e, ingredient.id)}
+          value={ingredientId}
+          onChange={(e) => handleSetIngredient(e, id)}
           label="Ingredient"
         >
           {ingredientsList
             .filter(
-              (ingredient) =>
-                ingredient.categoryId === ingredientCategory.category
+              (ingredient) => ingredient.categoryId === ingredientCategoryId
             )
             .map((ingredient) => (
               <MenuItem key={ingredient.id} value={ingredient.id}>
@@ -82,8 +78,8 @@ const RecipeIngredientRow = ({
         fullWidth
       >
         <InputField
-          value={quantity.quantity}
-          onChange={(e) => handleSetQuantity(e, quantity.id)}
+          value={quantity}
+          onChange={(e) => handleSetQuantity(e, id)}
           name="Quantity"
           label="Quantity (g/ml)"
           type="number"

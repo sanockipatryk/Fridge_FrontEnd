@@ -24,47 +24,53 @@ const AddRecipePage = () => {
     (state) => state.ingredients
   );
 
-  const [name, setName] = React.useState("Boiled potatoes");
-  const [description, setDescription] = React.useState(
-    "First off start with washing the potatoes and peel them. Next put them in a pot with enough water to cover all potatoes. Salt the water..."
-  );
-  const [cookingTime, setCookingTime] = React.useState("50");
-  const [ingredientCategory, setIngredientCategory] = React.useState([
-    { id: 0, category: 0 },
-  ]);
-  const [ingredient, setIngredient] = React.useState([
-    { id: 0, ingredient: 0 },
-  ]);
-  const [quantity, setQuantity] = React.useState([{ id: 0, quantity: 0 }]);
+  const initialInputState = {
+    name: "",
+    description: "",
+    cookingTime: 0,
+    ingredients: [
+      {
+        id: 0,
+        ingredientCategoryId: 0,
+        ingredientId: 0,
+        quantity: 0,
+      },
+    ],
+  };
+
+  const [inputState, setInputState] = React.useState(initialInputState);
   const [recipeAdded, setRecipeAdded] = React.useState(false);
 
   useEffect(() => {
-    setIngredientCategory(
-      ingredientsCategoriesList.length > 0
-        ? [{ id: 0, category: ingredientsCategoriesList[0]?.id }]
-        : [{ id: 0, category: 0 }]
-    );
-    setIngredient(
-      ingredientsList.length > 0
-        ? [
-            {
-              id: 0,
-              ingredient: ingredientsList.filter(
-                (i) => i?.categoryId === ingredientsCategoriesList[0]?.id
-              )[0]?.id,
-            },
-          ]
-        : [{ id: 0, ingredient: 0 }]
-    );
+    const firstCategoryId = ingredientsCategoriesList[0]?.id;
+    const firstIngredientIdInCategory = ingredientsList.filter(
+      (i) => i?.categoryId === firstCategoryId
+    )[0]?.id;
+    setInputState({
+      name: "",
+      description: "",
+      cookingTime: 0,
+      ingredients: [
+        {
+          id: 0,
+          ingredientCategoryId: firstCategoryId,
+          ingredientId: firstIngredientIdInCategory
+            ? firstIngredientIdInCategory
+            : 0,
+          quantity: 0,
+        },
+      ],
+    });
   }, [ingredientsCategoriesList, ingredientsList]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    const { name, description, cookingTime, ingredients } = inputState;
     const requestData = {
       name: name,
       description: description,
       cookingTime: parseInt(cookingTime),
-      ingredients: [...prepareIngredients(ingredient, quantity)],
+      ingredients: [...prepareIngredients(ingredients)],
     };
     axios
       .post("https://localhost:44356/api/Recipes/createRecipe", requestData)
@@ -76,53 +82,35 @@ const AddRecipePage = () => {
 
   return (
     <RecipeForm
+      inputState={inputState}
       formType="recipe"
       action="add"
       ingredientsList={ingredientsList}
       ingredientsCategoriesList={ingredientsCategoriesList}
       handleSubmit={handleSubmit}
-      // name={name}
-      // description={description}
-      // cookingTime={cookingTime}
-      // handleSetValue={handleSetValue(setName, setDescription, setCookingTime)}
-      ingredient={ingredient}
-      handleSetIngredient={handleSetIngredient(ingredient, setIngredient)}
-      ingredientCategory={ingredientCategory}
+      handleSetIngredient={handleSetIngredient(inputState, setInputState)}
       handleSetIngredientCategory={handleSetIngredientCategory(
-        ingredientCategory,
-        ingredient,
-        ingredientsList,
-        setIngredient,
-        setIngredientCategory
+        inputState,
+        setInputState,
+        ingredientsList
       )}
-      quantity={quantity}
-      handleSetQuantity={handleSetQuantity(quantity, setQuantity)}
+      handleSetQuantity={handleSetQuantity(inputState, setInputState)}
       handleRemoveIngredientFromList={handleRemoveIngredientFromList(
-        ingredientCategory,
-        ingredient,
-        quantity,
-        setIngredientCategory,
-        setIngredient,
-        setQuantity
+        inputState,
+        setInputState
       )}
       handleAddNextIngredient={handleAddNextIngredient(
-        ingredient,
-        ingredientCategory,
-        quantity,
+        inputState,
+        setInputState,
         ingredientsCategoriesList,
-        ingredientsList,
-        setIngredientCategory,
-        setIngredient,
-        setQuantity
+        ingredientsList
       )}
       isAuthenticated={isAuthenticated}
       elementAdded={recipeAdded}
     >
       <RecipeTextInputs
-        name={name}
-        description={description}
-        cookingTime={cookingTime}
-        handleSetValue={handleSetValue(setName, setDescription, setCookingTime)}
+        inputState={inputState}
+        handleSetValue={handleSetValue(inputState, setInputState)}
       />
     </RecipeForm>
   );

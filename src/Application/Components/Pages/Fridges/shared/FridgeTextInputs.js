@@ -2,22 +2,22 @@ import React, { Fragment } from "react";
 import InputField from "../../../Reusable/BasicInputField";
 import { addRecipeStyles } from "../../Recipes/RecipesPageStyles";
 
-const FridgeTextInputs = ({ name, description, handleSetValue }) => {
+const FridgeTextInputs = ({ inputState, handleSetValue }) => {
   const classes = addRecipeStyles();
   return (
     <Fragment>
       <InputField
-        value={name}
+        value={inputState.name}
         onChange={handleSetValue}
-        name="Name"
+        name="name"
         label="Fridge name"
       />
       <InputField
-        value={description}
+        value={inputState.description}
         onChange={handleSetValue}
         multiline
         rows={4}
-        name="Description"
+        name="description"
         label="Description"
       />
     </Fragment>

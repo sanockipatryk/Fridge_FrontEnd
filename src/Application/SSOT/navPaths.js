@@ -14,6 +14,5 @@ export const EDIT_RECIPE = {
 };
 export const LOGIN = { name: "Sign in", path: "/signin" };
 export const REGISTER = { name: "Sign up", path: "/signup" };
-export const LOGOUT = { name: "Logout", path: "/logout" };
 
 export const navPaths = [HOME, LOGIN, REGISTER];

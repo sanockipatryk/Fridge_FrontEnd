@@ -3,25 +3,18 @@ import { Button, Grid, Paper } from "@material-ui/core";
 import { addRecipeStyles } from "../RecipesPageStyles";
 import { Redirect, withRouter } from "react-router-dom";
 import { FRIDGES, LOGIN, RECIPES } from "../../../../SSOT/navPaths";
-// import RecipeTextInputs from "../shared/RecipeTextInputs";
 import RecipeIngredientRow from "../shared/RecipeIngredientRow";
 
 const RecipeForm = ({
   children,
+  inputState,
   formType,
   action,
   ingredientsList,
   ingredientsCategoriesList,
   handleSubmit,
-  // name,
-  // description,
-  // cookingTime,
-  // handleSetValue,
-  ingredient,
   handleSetIngredient,
-  ingredientCategory,
   handleSetIngredientCategory,
-  quantity,
   handleSetQuantity,
   handleRemoveIngredientFromList,
   handleAddNextIngredient,
@@ -30,6 +23,7 @@ const RecipeForm = ({
   history,
 }) => {
   const classes = addRecipeStyles();
+  const { ingredients } = inputState;
   return (
     <Grid container item xs={12} justify="center" alignItems="center">
       <Grid container item xs={6}>
@@ -43,26 +37,16 @@ const RecipeForm = ({
                 className={classes.AddRecipeForm}
               >
                 {children}
-                {/* <RecipeTextInputs
-                  name={name}
-                  description={description}
-                  cookingTime={cookingTime}
-                  handleSetValue={handleSetValue}
-                /> */}
-                {ingredient.map((item, index) => (
+                {ingredients?.map((item, index) => (
                   <RecipeIngredientRow
                     key={index}
                     index={index}
+                    itemState={item}
                     formType={formType}
-                    ingredient={item}
-                    handleSetIngredient={handleSetIngredient}
                     ingredientsList={ingredientsList}
-                    ingredientCategory={
-                      ingredientCategory.filter((q) => q.id === item.id)[0]
-                    }
-                    handleSetIngredientCategory={handleSetIngredientCategory}
                     ingredientsCategoriesList={ingredientsCategoriesList}
-                    quantity={quantity.filter((q) => q.id === item.id)[0]}
+                    handleSetIngredient={handleSetIngredient}
+                    handleSetIngredientCategory={handleSetIngredientCategory}
                     handleSetQuantity={handleSetQuantity}
                     handleRemoveIngredientFromList={
                       handleRemoveIngredientFromList
@@ -75,12 +59,12 @@ const RecipeForm = ({
                     variant="contained"
                     onClick={handleAddNextIngredient}
                     className={
-                      ingredient.length !== 0
+                      ingredients.length !== 0
                         ? classes.NextIngredientButton
                         : null
                     }
                   >
-                    {ingredient.length === 0
+                    {ingredients.length === 0
                       ? "Add ingredient"
                       : "Next ingredient"}
                   </Button>

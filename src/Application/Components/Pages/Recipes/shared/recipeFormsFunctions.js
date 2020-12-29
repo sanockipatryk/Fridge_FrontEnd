@@ -1,121 +1,105 @@
-export const handleSetValue = (setName, setDescription, setCookingTime) => (
-  event
-) => {
-  switch (event.target.name) {
-    case "Name":
-      setName(event.target.value);
-      break;
-    case "Description":
-      setDescription(event.target.value);
-      break;
-    case "CookingTime":
-      setCookingTime(event.target.value);
-      break;
-    default:
-      break;
-  }
+export const handleSetValue = (inputState, setInputState) => (event) => {
+  const { name, value } = event.target;
+  setInputState({
+    ...inputState,
+    [name]: value,
+  });
 };
 
-export const handleSetIngredient = (ingredient, setIngredient) => (
+export const handleSetIngredient = (inputState, setInputState) => (
   event,
   id
 ) => {
-  let currentIngredient = [...ingredient];
-  currentIngredient.find((i) => i.id === id).ingredient = event.target.value;
-  setIngredient(currentIngredient);
+  const { ingredients } = inputState;
+  let currentIngredients = [...ingredients];
+  currentIngredients.find((i) => i.id === id).ingredientId = event.target.value;
+  setInputState({
+    ...inputState,
+    ingredients: currentIngredients,
+  });
 };
 
 export const handleSetIngredientCategory = (
-  ingredientCategory,
-  ingredient,
-  ingredientsList,
-  setIngredient,
-  setIngredientCategory
+  inputState,
+  setInputState,
+  ingredientsList
 ) => (event, id) => {
-  let currentIngredientCategory = [...ingredientCategory];
-  currentIngredientCategory.find((i) => i.id === id).category =
+  const { ingredients } = inputState;
+  let currentIngredients = [...ingredients];
+  currentIngredients.find((i) => i.id === id).ingredientCategoryId =
     event.target.value;
 
-  let currentIngredient = [...ingredient];
-  currentIngredient.find(
+  currentIngredients.find(
     (i) => i.id === id
-  ).ingredient = ingredientsList.filter(
+  ).ingredientId = ingredientsList.filter(
     (ingredient) => ingredient.categoryId === event.target.value
   )[0]?.id;
 
-  setIngredient(currentIngredient);
-  setIngredientCategory(currentIngredientCategory);
+  setInputState({
+    ...inputState,
+    ingredients: currentIngredients,
+  });
 };
 
-export const handleSetQuantity = (quantity, setQuantity) => (event, id) => {
-  let currentQuantities = [...quantity];
-  currentQuantities.find((i) => i.id === id).quantity = event.target.value;
-  setQuantity(currentQuantities);
+export const handleSetQuantity = (inputState, setInputState) => (event, id) => {
+  const { ingredients } = inputState;
+  let currentIngredients = [...ingredients];
+  currentIngredients.find((i) => i.id === id).quantity = event.target.value;
+  setInputState({
+    ...inputState,
+    ingredients: currentIngredients,
+  });
 };
 
-export const handleRemoveIngredientFromList = (
-  ingredientCategory,
-  ingredient,
-  quantity,
-  setIngredientCategory,
-  setIngredient,
-  setQuantity
-) => (id) => {
-  let currentIngredientCategories = [...ingredientCategory];
-  let currentIngredients = [...ingredient];
-  let currentQuantities = [...quantity];
+export const handleRemoveIngredientFromList = (inputState, setInputState) => (
+  id
+) => {
+  const { ingredients } = inputState;
+  const currentIngredients = [...ingredients];
 
-  const reducedIngredientCategories = currentIngredientCategories.filter(
-    (i) => i.id !== id
-  );
-  const reducedIngredients = currentIngredients.filter((i) => i.id !== id);
-  const reducedQuantities = currentQuantities.filter((i) => i.id !== id);
-
-  setIngredientCategory(reducedIngredientCategories);
-  setIngredient(reducedIngredients);
-  setQuantity(reducedQuantities);
+  setInputState({
+    ...inputState,
+    ingredients: currentIngredients.filter((i) => i.id !== id),
+  });
 };
 
 export const handleAddNextIngredient = (
-  ingredient,
-  ingredientCategory,
-  quantity,
+  inputState,
+  setInputState,
   ingredientsCategoriesList,
-  ingredientsList,
-  setIngredientCategory,
-  setIngredient,
-  setQuantity
+  ingredientsList
 ) => () => {
-  let currentIngredients = [...ingredient];
-  let currentIngredientCategories = [...ingredientCategory];
-  let currentQuantities = [...quantity];
+  const { ingredients } = inputState;
+  let currentIngredients = [...ingredients];
   const firstCategoryId = ingredientsCategoriesList[0]?.id;
+  const firstIngredientId = ingredientsList.filter(
+    (ingredient) => ingredient.categoryId === firstCategoryId
+  )[0]?.id;
   let maxId;
   currentIngredients.length > 0
     ? (maxId = currentIngredients[currentIngredients.length - 1]?.id)
     : (maxId = -1);
-  currentIngredientCategories.push({
-    id: maxId + 1,
-    category: firstCategoryId,
+
+  setInputState({
+    ...inputState,
+    ingredients: [
+      ...ingredients,
+      {
+        id: ++maxId,
+        ingredientCategoryId: firstCategoryId,
+        ingredientId: firstIngredientId,
+        quantity: 0,
+      },
+    ],
   });
-  currentIngredients.push({
-    id: maxId + 1,
-    ingredient: ingredientsList.filter(
-      (ingredient) => ingredient.categoryId === firstCategoryId
-    )[0]?.id,
-  });
-  currentQuantities.push({ id: maxId + 1, quantity: 0 });
-  setIngredientCategory(currentIngredientCategories);
-  setIngredient(currentIngredients);
-  setQuantity(currentQuantities);
 };
 
-export const prepareIngredients = (ingredientList, quantityList) => {
+export const prepareIngredients = (ingredients) => {
   let currentIngredients = [];
-  ingredientList.forEach((i) => {
+  ingredients.forEach((i) => {
     currentIngredients.push({
-      ingredientId: i.ingredient,
-      quantity: parseInt(quantityList.find((q) => q.id === i.id).quantity),
+      ingredientId: i.ingredientId,
+      quantity: parseInt(i.quantity),
     });
   });
   return currentIngredients;
