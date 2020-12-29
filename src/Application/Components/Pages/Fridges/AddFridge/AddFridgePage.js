@@ -6,17 +6,17 @@ import {
   fridgeAddedError,
   fridgeAddedSuccess,
 } from "../../../../SSOT/toastMessages";
-import RecipeForm from "../../Recipes/shared/RecipeForm";
 import {
+  handleSetValue,
   handleSetIngredient,
   handleSetIngredientCategory,
   handleSetQuantity,
   handleRemoveIngredientFromList,
   handleAddNextIngredient,
   prepareIngredients,
-} from "../../Recipes/shared/recipeFormsFunctions";
-import { handleSetValue } from "../../Recipes/shared/recipeFormsFunctions";
+} from "../../../shared/IngredientsForm/ingredientsFormFunctions";
 import FridgeTextInputs from "../shared/FridgeTextInputs";
+import IngredientsForm from "../../../shared/IngredientsForm/IngredientsForm";
 
 const AddFridgePage = () => {
   const isAuthenticated = useSelector((state) => state.signIn.isAuthenticated);
@@ -50,7 +50,7 @@ const AddFridgePage = () => {
   };
 
   return (
-    <RecipeForm
+    <IngredientsForm
       inputState={inputState}
       formType="fridge"
       action="add"
@@ -81,7 +81,7 @@ const AddFridgePage = () => {
         inputState={inputState}
         handleSetValue={handleSetValue(inputState, setInputState)}
       />
-    </RecipeForm>
+    </IngredientsForm>
   );
 };
 

@@ -21,7 +21,7 @@ const InputField = ({
   return (
     <Grid container item xs={12} className={additionalClass}>
       <TextField
-        className={`${classes.SignInTextField}`}
+        className={`${classes.TextField}`}
         name={name}
         label={label}
         type={type}

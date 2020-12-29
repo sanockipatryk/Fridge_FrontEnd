@@ -1,11 +1,11 @@
 import React from "react";
 import { Button, Grid, Paper } from "@material-ui/core";
-import { addRecipeStyles } from "../RecipesPageStyles";
+import useStyles from "./IngredientsFormStyles";
 import { Redirect, withRouter } from "react-router-dom";
-import { FRIDGES, LOGIN, RECIPES } from "../../../../SSOT/navPaths";
-import RecipeIngredientRow from "../shared/RecipeIngredientRow";
+import { FRIDGES, LOGIN, RECIPES } from "../../../SSOT/navPaths";
+import IngredientsFormRow from "./IngredientsFormRow";
 
-const RecipeForm = ({
+const IngredientsForm = ({
   children,
   inputState,
   formType,
@@ -22,23 +22,23 @@ const RecipeForm = ({
   elementAdded,
   history,
 }) => {
-  const classes = addRecipeStyles();
+  const classes = useStyles();
   const { ingredients } = inputState;
   return (
     <Grid container item xs={12} justify="center" alignItems="center">
       <Grid container item xs={6}>
-        <Paper elevation={3} className={classes.AddRecipePaper}>
+        <Paper elevation={3} className={classes.FormPaper}>
           <Grid container item xs={12} justify="center">
             {ingredientsList?.length > 0 &&
             ingredientsCategoriesList.length > 0 ? (
               <form
                 autoComplete="off"
                 onSubmit={handleSubmit}
-                className={classes.AddRecipeForm}
+                className={classes.Form}
               >
                 {children}
                 {ingredients?.map((item, index) => (
-                  <RecipeIngredientRow
+                  <IngredientsFormRow
                     key={index}
                     index={index}
                     itemState={item}
@@ -104,4 +104,4 @@ const RecipeForm = ({
   );
 };
 
-export default withRouter(RecipeForm);
+export default withRouter(IngredientsForm);

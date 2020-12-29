@@ -6,7 +6,6 @@ import {
   recipeAddedError,
   recipeAddedSuccess,
 } from "../../../../SSOT/toastMessages";
-import RecipeForm from "../shared/RecipeForm";
 import {
   handleSetValue,
   handleSetIngredient,
@@ -15,8 +14,9 @@ import {
   handleRemoveIngredientFromList,
   handleAddNextIngredient,
   prepareIngredients,
-} from "../shared/recipeFormsFunctions";
+} from "../../../shared/IngredientsForm/ingredientsFormFunctions";
 import RecipeTextInputs from "../shared/RecipeTextInputs";
+import IngredientsForm from "../../../shared/IngredientsForm/IngredientsForm";
 
 const AddRecipePage = () => {
   const isAuthenticated = useSelector((state) => state.signIn.isAuthenticated);
@@ -81,7 +81,7 @@ const AddRecipePage = () => {
   };
 
   return (
-    <RecipeForm
+    <IngredientsForm
       inputState={inputState}
       formType="recipe"
       action="add"
@@ -112,7 +112,7 @@ const AddRecipePage = () => {
         inputState={inputState}
         handleSetValue={handleSetValue(inputState, setInputState)}
       />
-    </RecipeForm>
+    </IngredientsForm>
   );
 };
 

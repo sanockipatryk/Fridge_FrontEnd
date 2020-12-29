@@ -7,7 +7,6 @@ import {
   recipeEditedError,
   recipeEditedSuccess,
 } from "../../../../SSOT/toastMessages";
-import RecipeForm from "../shared/RecipeForm";
 import {
   handleSetValue,
   handleSetIngredient,
@@ -16,8 +15,9 @@ import {
   handleRemoveIngredientFromList,
   handleAddNextIngredient,
   prepareIngredients,
-} from "../shared/recipeFormsFunctions";
+} from "../../../shared/IngredientsForm/ingredientsFormFunctions";
 import RecipeTextInputs from "../shared/RecipeTextInputs";
+import IngredientsForm from "../../../shared/IngredientsForm/IngredientsForm";
 
 const EditRecipePage = () => {
   const isAuthenticated = useSelector((state) => state.signIn.isAuthenticated);
@@ -79,7 +79,7 @@ const EditRecipePage = () => {
   };
 
   return (
-    <RecipeForm
+    <IngredientsForm
       inputState={inputState}
       formType="recipe"
       action="edit"
@@ -110,7 +110,7 @@ const EditRecipePage = () => {
         inputState={inputState}
         handleSetValue={handleSetValue(inputState, setInputState)}
       />
-    </RecipeForm>
+    </IngredientsForm>
   );
 };
 

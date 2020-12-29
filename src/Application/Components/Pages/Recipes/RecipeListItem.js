@@ -9,7 +9,7 @@ import { Link } from "react-router-dom";
 import React, { Fragment } from "react";
 import { EDIT_RECIPE } from "../../../SSOT/navPaths";
 import { useFridgeListItemStyles } from "../Fridges/FridgesPageStyles";
-import ConfirmDialog from "./shared/ConfirmDialog";
+import ConfirmDialog from "../../shared/ConfirmDialog/ConfirmDialog";
 import { deleteRecipeContent } from "../../../SSOT/confirmDialogContents";
 
 const RecipeListItem = ({ recipe, handleDeleteRecipe }) => {

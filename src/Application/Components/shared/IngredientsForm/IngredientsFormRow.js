@@ -6,11 +6,11 @@ import {
   MenuItem,
   Select,
 } from "@material-ui/core";
-import InputField from "../../../Reusable/BasicInputField";
 import RemoveIcon from "@material-ui/icons/Remove";
-import { addRecipeStyles } from "../RecipesPageStyles";
+import InputField from "../../Reusable/BasicInputField";
+import useStyles from "./IngredientsFormStyles";
 
-const RecipeIngredientRow = ({
+const IngredientsFormRow = ({
   index,
   itemState,
   formType,
@@ -21,7 +21,7 @@ const RecipeIngredientRow = ({
   handleSetQuantity,
   handleRemoveIngredientFromList,
 }) => {
-  const classes = addRecipeStyles();
+  const classes = useStyles();
   const { id, ingredientCategoryId, ingredientId, quantity } = itemState;
   return (
     <div className={classes.IngredientRow}>
@@ -90,4 +90,4 @@ const RecipeIngredientRow = ({
   );
 };
 
-export default RecipeIngredientRow;
+export default IngredientsFormRow;

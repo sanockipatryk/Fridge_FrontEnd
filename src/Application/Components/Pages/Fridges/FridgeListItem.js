@@ -8,7 +8,7 @@ import {
   Typography,
 } from "@material-ui/core";
 import { useFridgeListItemStyles } from "./FridgesPageStyles";
-import ConfirmDialog from "../Recipes/shared/ConfirmDialog";
+import ConfirmDialog from "../../shared/ConfirmDialog/ConfirmDialog";
 import { deleteFridgeContent } from "../../../SSOT/confirmDialogContents";
 
 const FridgeListItem = ({ fridge, handleDeleteRecipe }) => {

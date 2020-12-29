@@ -5,10 +5,10 @@ import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
-import { addRecipeStyles } from "../RecipesPageStyles";
+import useStyles from "./ConfirmDialogStyles";
 
 const ConfirmDialog = ({ open, handleClose, handleDelete, content }) => {
-  const classes = addRecipeStyles();
+  const classes = useStyles();
   return (
     <div>
       <Dialog

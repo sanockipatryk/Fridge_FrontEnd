@@ -47,14 +47,6 @@ export const useStyles = makeStyles((theme) => ({
 }));
 
 export const addRecipeStyles = makeStyles((theme) => ({
-  AddRecipePaper: {
-    margin: "40px 0",
-    width: "100%",
-    padding: "25px",
-  },
-  AddRecipeForm: {
-    width: "80%",
-  },
   IngredientRow: {
     width: "100%",
     display: "flex",
@@ -65,49 +57,5 @@ export const addRecipeStyles = makeStyles((theme) => ({
   },
   RecipeCookingTimeInput: {
     flexBasis: "20%",
-  },
-  FormControlWide: {
-    paddingBottom: "20px",
-    flexBasis: "39%",
-  },
-  FormControlSlim: {
-    paddingBottom: "20px",
-    flexBasis: "20%",
-  },
-  RemoveIngredientButton: {
-    display: "block",
-    width: "30px",
-    height: "30px",
-    lineHeight: "30px",
-    textAlign: "center",
-    fontSize: "30px",
-    padding: "none",
-    minWidth: "30px",
-    position: "absolute",
-    transform: "translate(-40px, 50%)",
-    backgroundColor: "#EC5766",
-    "&:hover": {
-      backgroundColor: "#EB4758",
-    },
-  },
-  RemoveIngredientIcon: {
-    width: "30px",
-    height: "30px",
-    transform: "translate(-50%, -20%)",
-    color: "#fff",
-  },
-  NextIngredientButton: {
-    marginTop: "-20px",
-  },
-  CancelButton: {
-    marginRight: "5px",
-    color: "#fff",
-    backgroundColor: "#EC5766",
-    "&:hover": {
-      backgroundColor: "#EB4758",
-    },
-  },
-  CancelButtonNoMargin: {
-    marginRight: "0",
   },
 }));
