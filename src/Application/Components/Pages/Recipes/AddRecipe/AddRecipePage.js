@@ -24,21 +24,26 @@ const AddRecipePage = () => {
     (state) => state.ingredients
   );
 
-  const initialInputState = {
+  const initialTextInputState = {
     name: "",
     description: "",
     cookingTime: 0,
-    ingredients: [
-      {
-        id: 0,
-        ingredientCategoryId: 0,
-        ingredientId: 0,
-        quantity: 0,
-      },
-    ],
   };
+  const initialInputState = [
+    {
+      id: 0,
+      ingredientCategoryId: 0,
+      ingredientId: 0,
+      quantity: 0,
+    },
+  ];
 
-  const [inputState, setInputState] = React.useState(initialInputState);
+  const [textInputState, setTextInputState] = React.useState(
+    initialTextInputState
+  );
+  const [ingredientsState, setIngredientsState] = React.useState(
+    initialInputState
+  );
   const [recipeAdded, setRecipeAdded] = React.useState(false);
 
   useEffect(() => {
@@ -46,31 +51,27 @@ const AddRecipePage = () => {
     const firstIngredientIdInCategory = ingredientsList.filter(
       (i) => i?.categoryId === firstCategoryId
     )[0]?.id;
-    setInputState({
-      name: "",
-      description: "",
-      cookingTime: 0,
-      ingredients: [
-        {
-          id: 0,
-          ingredientCategoryId: firstCategoryId,
-          ingredientId: firstIngredientIdInCategory
-            ? firstIngredientIdInCategory
-            : 0,
-          quantity: 0,
-        },
-      ],
-    });
+    setIngredientsState([
+      {
+        id: 0,
+        ingredientCategoryId: firstCategoryId,
+        ingredientId: firstIngredientIdInCategory
+          ? firstIngredientIdInCategory
+          : 0,
+        quantity: 0,
+      },
+    ]);
   }, [ingredientsCategoriesList, ingredientsList]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const { name, description, cookingTime, ingredients } = inputState;
+    const { name, description, cookingTime } = textInputState;
+
     const requestData = {
       name: name,
       description: description,
       cookingTime: parseInt(cookingTime),
-      ingredients: [...prepareIngredients(ingredients)],
+      ingredients: [...prepareIngredients(ingredientsState)],
     };
     axios
       .post("https://localhost:44356/api/Recipes/createRecipe", requestData)
@@ -82,26 +83,32 @@ const AddRecipePage = () => {
 
   return (
     <IngredientsForm
-      inputState={inputState}
+      inputState={ingredientsState}
       formType="recipe"
       action="add"
       ingredientsList={ingredientsList}
       ingredientsCategoriesList={ingredientsCategoriesList}
       handleSubmit={handleSubmit}
-      handleSetIngredient={handleSetIngredient(inputState, setInputState)}
+      handleSetIngredient={handleSetIngredient(
+        ingredientsState,
+        setIngredientsState
+      )}
       handleSetIngredientCategory={handleSetIngredientCategory(
-        inputState,
-        setInputState,
+        ingredientsState,
+        setIngredientsState,
         ingredientsList
       )}
-      handleSetQuantity={handleSetQuantity(inputState, setInputState)}
+      handleSetQuantity={handleSetQuantity(
+        ingredientsState,
+        setIngredientsState
+      )}
       handleRemoveIngredientFromList={handleRemoveIngredientFromList(
-        inputState,
-        setInputState
+        ingredientsState,
+        setIngredientsState
       )}
       handleAddNextIngredient={handleAddNextIngredient(
-        inputState,
-        setInputState,
+        ingredientsState,
+        setIngredientsState,
         ingredientsCategoriesList,
         ingredientsList
       )}
@@ -109,8 +116,8 @@ const AddRecipePage = () => {
       elementAdded={recipeAdded}
     >
       <RecipeTextInputs
-        inputState={inputState}
-        handleSetValue={handleSetValue(inputState, setInputState)}
+        inputState={textInputState}
+        handleSetValue={handleSetValue(textInputState, setTextInputState)}
       />
     </IngredientsForm>
   );

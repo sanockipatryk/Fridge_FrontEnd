@@ -1,13 +1,6 @@
-import React, { Fragment } from "react";
+import React from "react";
 import axios from "axios";
-import {
-  Button,
-  Card,
-  CircularProgress,
-  Grid,
-  Paper,
-  Typography,
-} from "@material-ui/core";
+import { Button, Grid, Paper } from "@material-ui/core";
 import { ADD_FRIDGE } from "../../../SSOT/navPaths";
 import { toast } from "react-toastify";
 import {

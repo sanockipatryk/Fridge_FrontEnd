@@ -25,17 +25,22 @@ const EditRecipePage = () => {
     (state) => state.ingredients
   );
 
-  const initialInputState = {
+  const initialTextInputState = {
     name: "",
     description: "",
     cookingTime: 0,
-    ingredients: [],
   };
+  const initialInputState = [];
 
   let location = useLocation();
   const { recipe } = location?.state;
 
-  const [inputState, setInputState] = React.useState(initialInputState);
+  const [textInputState, setTextInputState] = React.useState(
+    initialTextInputState
+  );
+  const [ingredientsState, setIngredientsState] = React.useState(
+    initialInputState
+  );
   const [recipeAdded, setRecipeAdded] = React.useState(false);
 
   useEffect(() => {
@@ -51,25 +56,25 @@ const EditRecipePage = () => {
           quantity: i.quantity,
         });
       });
-      setInputState({
+      setTextInputState({
         name: recipe?.name,
         description: recipe?.description,
         cookingTime: recipe?.cookingTime,
-        ingredients: initialIngredients,
       });
+      setIngredientsState(initialIngredients);
     };
     initializeData();
   }, [recipe]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const { name, description, cookingTime, ingredients } = inputState;
+    const { name, description, cookingTime } = textInputState;
     const requestData = {
       recipeId: recipe.id,
       name: name,
       description: description,
       cookingTime: parseInt(cookingTime),
-      ingredients: [...prepareIngredients(ingredients)],
+      ingredients: [...prepareIngredients(ingredientsState)],
     };
     axios
       .put("https://localhost:44356/api/Recipes/editRecipe", requestData)
@@ -80,26 +85,32 @@ const EditRecipePage = () => {
 
   return (
     <IngredientsForm
-      inputState={inputState}
+      inputState={ingredientsState}
       formType="recipe"
       action="edit"
       ingredientsList={ingredientsList}
       ingredientsCategoriesList={ingredientsCategoriesList}
       handleSubmit={handleSubmit}
-      handleSetIngredient={handleSetIngredient(inputState, setInputState)}
+      handleSetIngredient={handleSetIngredient(
+        ingredientsState,
+        setIngredientsState
+      )}
       handleSetIngredientCategory={handleSetIngredientCategory(
-        inputState,
-        setInputState,
+        ingredientsState,
+        setIngredientsState,
         ingredientsList
       )}
-      handleSetQuantity={handleSetQuantity(inputState, setInputState)}
+      handleSetQuantity={handleSetQuantity(
+        ingredientsState,
+        setIngredientsState
+      )}
       handleRemoveIngredientFromList={handleRemoveIngredientFromList(
-        inputState,
-        setInputState
+        ingredientsState,
+        setIngredientsState
       )}
       handleAddNextIngredient={handleAddNextIngredient(
-        inputState,
-        setInputState,
+        ingredientsState,
+        setIngredientsState,
         ingredientsCategoriesList,
         ingredientsList
       )}
@@ -107,8 +118,8 @@ const EditRecipePage = () => {
       elementAdded={recipeAdded}
     >
       <RecipeTextInputs
-        inputState={inputState}
-        handleSetValue={handleSetValue(inputState, setInputState)}
+        inputState={textInputState}
+        handleSetValue={handleSetValue(textInputState, setTextInputState)}
       />
     </IngredientsForm>
   );

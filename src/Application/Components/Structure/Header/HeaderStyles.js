@@ -4,6 +4,7 @@ const useStyles = makeStyles((theme) => ({
   NavBar: {
     backgroundColor: "#FE9920",
     minHeight: "70px",
+    padding: "0 15px",
     justifyContent: "flex-end",
     boxSizing: "border-box",
     flexGrow: 0,

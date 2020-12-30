@@ -24,23 +24,30 @@ const AddFridgePage = () => {
     (state) => state.ingredients
   );
 
-  const initialInputState = {
+  const initialTextInputState = {
     name: "",
     description: "",
-    ingredients: [],
   };
+  const initialInputState = [];
 
+  const [textInputState, setTextInputState] = React.useState(
+    initialTextInputState
+  );
+  const [ingredientsState, setIngredientsState] = React.useState(
+    initialInputState
+  );
   const [fridgeAdded, setFridgeAdded] = React.useState(false);
-  const [inputState, setInputState] = React.useState(initialInputState);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const { name, description, ingredients } = inputState;
+    const { name, description } = textInputState;
     const requestData = {
       name: name,
       description: description,
       ingredients:
-        ingredients?.length > 0 ? [...prepareIngredients(ingredients)] : [],
+        ingredientsState?.length > 0
+          ? [...prepareIngredients(ingredientsState)]
+          : [],
     };
     axios
       .post("https://localhost:44356/api/Fridges/createFridge", requestData)
@@ -51,26 +58,32 @@ const AddFridgePage = () => {
 
   return (
     <IngredientsForm
-      inputState={inputState}
+      inputState={ingredientsState}
       formType="fridge"
       action="add"
       ingredientsList={ingredientsList}
       ingredientsCategoriesList={ingredientsCategoriesList}
       handleSubmit={handleSubmit}
-      handleSetIngredient={handleSetIngredient(inputState, setInputState)}
+      handleSetIngredient={handleSetIngredient(
+        ingredientsState,
+        setIngredientsState
+      )}
       handleSetIngredientCategory={handleSetIngredientCategory(
-        inputState,
-        setInputState,
+        ingredientsState,
+        setIngredientsState,
         ingredientsList
       )}
-      handleSetQuantity={handleSetQuantity(inputState, setInputState)}
+      handleSetQuantity={handleSetQuantity(
+        ingredientsState,
+        setIngredientsState
+      )}
       handleRemoveIngredientFromList={handleRemoveIngredientFromList(
-        inputState,
-        setInputState
+        ingredientsState,
+        setIngredientsState
       )}
       handleAddNextIngredient={handleAddNextIngredient(
-        inputState,
-        setInputState,
+        ingredientsState,
+        setIngredientsState,
         ingredientsCategoriesList,
         ingredientsList
       )}
@@ -78,8 +91,8 @@ const AddFridgePage = () => {
       elementAdded={fridgeAdded}
     >
       <FridgeTextInputs
-        inputState={inputState}
-        handleSetValue={handleSetValue(inputState, setInputState)}
+        inputState={textInputState}
+        handleSetValue={handleSetValue(textInputState, setTextInputState)}
       />
     </IngredientsForm>
   );
