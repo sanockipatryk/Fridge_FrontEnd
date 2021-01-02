@@ -8,16 +8,24 @@ import {
   recipeEditedSuccess,
 } from "../../../../SSOT/toastMessages";
 import {
-  handleSetValue,
   handleSetIngredient,
   handleSetIngredientCategory,
   handleSetQuantity,
   handleRemoveIngredientFromList,
   handleAddNextIngredient,
   prepareIngredients,
+  handleSubmitPartial,
+  handleOnBlurQuantity,
+  checkValidation,
 } from "../../../shared/IngredientsForm/ingredientsFormFunctions";
+import {
+  handleOnBlur,
+  handleSetValue,
+} from "../../../Reusable/textInputHandlers";
 import RecipeTextInputs from "../shared/RecipeTextInputs";
 import IngredientsForm from "../../../shared/IngredientsForm/IngredientsForm";
+import { validateForm } from "../../../../../Validations/validations";
+import { recipeFormSchema } from "../../../../../Validations/RecipeFormValidation";
 
 const EditRecipePage = () => {
   const isAuthenticated = useSelector((state) => state.signIn.isAuthenticated);
@@ -26,9 +34,17 @@ const EditRecipePage = () => {
   );
 
   const initialTextInputState = {
-    name: "",
-    description: "",
-    cookingTime: 0,
+    values: {
+      name: "",
+      description: "",
+      cookingTime: 0,
+    },
+    touched: {
+      name: false,
+      description: false,
+      cookingTime: false,
+    },
+    errors: {},
   };
   const initialInputState = [];
 
@@ -46,7 +62,7 @@ const EditRecipePage = () => {
   useEffect(() => {
     const initializeData = () => {
       const currentIngredients = [...recipe?.ingredients];
-      let initialIngredients = [];
+      const initialIngredients = [];
 
       currentIngredients.forEach((i, index) => {
         initialIngredients.push({
@@ -54,40 +70,62 @@ const EditRecipePage = () => {
           ingredientCategoryId: i.categoryId,
           ingredientId: i.ingredientId,
           quantity: i.quantity,
+          quantityTouched: false,
+          quantityError: "",
         });
       });
-      setTextInputState({
-        name: recipe?.name,
-        description: recipe?.description,
-        cookingTime: recipe?.cookingTime,
-      });
       setIngredientsState(initialIngredients);
+
+      setTextInputState({
+        values: {
+          name: recipe?.name,
+          description: recipe?.description,
+          cookingTime: recipe?.cookingTime,
+        },
+        touched: {
+          name: false,
+          description: false,
+          cookingTime: false,
+        },
+        errors: {},
+      });
     };
     initializeData();
   }, [recipe]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const { name, description, cookingTime } = textInputState;
-    const requestData = {
-      recipeId: recipe.id,
-      name: name,
-      description: description,
-      cookingTime: parseInt(cookingTime),
-      ingredients: [...prepareIngredients(ingredientsState)],
-    };
-    axios
-      .put("https://localhost:44356/api/Recipes/editRecipe", requestData)
-      .then(() => toast.success(recipeEditedSuccess))
-      .then(() => setRecipeAdded(true))
-      .catch((err) => toast.error(recipeEditedError));
+    handleSubmitPartial(
+      recipeFormSchema,
+      textInputState,
+      setTextInputState,
+      ingredientsState,
+      setIngredientsState
+    );
+    if (
+      await checkValidation(recipeFormSchema, textInputState, ingredientsState)
+    ) {
+      const { name, description, cookingTime } = textInputState.values;
+      const requestData = {
+        recipeId: recipe.id,
+        name: name,
+        description: description,
+        cookingTime: parseInt(cookingTime),
+        ingredients: [...prepareIngredients(ingredientsState)],
+      };
+      axios
+        .put("https://localhost:44356/api/Recipes/editRecipe", requestData)
+        .then(() => toast.success(recipeEditedSuccess))
+        .then(() => setRecipeAdded(true))
+        .catch((err) => toast.error(recipeEditedError));
+    }
   };
 
   return (
     <IngredientsForm
-      inputState={ingredientsState}
       formType="recipe"
       action="edit"
+      ingredientsState={ingredientsState}
       ingredientsList={ingredientsList}
       ingredientsCategoriesList={ingredientsCategoriesList}
       handleSubmit={handleSubmit}
@@ -102,7 +140,13 @@ const EditRecipePage = () => {
       )}
       handleSetQuantity={handleSetQuantity(
         ingredientsState,
-        setIngredientsState
+        setIngredientsState,
+        recipeFormSchema
+      )}
+      handleOnBlurQuantity={handleOnBlurQuantity(
+        ingredientsState,
+        setIngredientsState,
+        recipeFormSchema
       )}
       handleRemoveIngredientFromList={handleRemoveIngredientFromList(
         ingredientsState,
@@ -119,7 +163,16 @@ const EditRecipePage = () => {
     >
       <RecipeTextInputs
         inputState={textInputState}
-        handleSetValue={handleSetValue(textInputState, setTextInputState)}
+        handleSetValue={handleSetValue(
+          textInputState,
+          setTextInputState,
+          recipeFormSchema
+        )}
+        handleOnBlur={handleOnBlur(
+          textInputState,
+          setTextInputState,
+          recipeFormSchema
+        )}
       />
     </IngredientsForm>
   );

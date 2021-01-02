@@ -2,31 +2,37 @@ import React, { Fragment } from "react";
 import InputField from "../../../Reusable/BasicInputField";
 
 const FridgeTextInputs = React.memo(
-  ({ inputState, handleSetValue }) => {
-    const { name, description } = inputState;
+  ({ inputState, handleSetValue, handleOnBlur }) => {
+    const { values, touched, errors } = inputState;
     return (
       <Fragment>
         <InputField
-          value={name}
+          value={values.name}
           onChange={handleSetValue}
+          handleOnBlur={handleOnBlur}
           name="name"
           label="Fridge name"
+          touched={touched?.name}
+          error={errors?.name}
         />
         <InputField
-          value={description}
+          value={values.description}
           onChange={handleSetValue}
+          handleOnBlur={handleOnBlur}
           multiline
           rows={4}
           name="description"
           label="Description"
+          touched={touched?.description}
+          error={errors?.description}
         />
       </Fragment>
     );
   },
   (prevProps, nextProps) => {
     if (
-      prevProps.inputState.name !== nextProps.inputState.name ||
-      prevProps.inputState.description !== nextProps.inputState.description
+      JSON.stringify(prevProps.inputState) !==
+      JSON.stringify(nextProps.inputState)
     ) {
       return false;
     } else return true;

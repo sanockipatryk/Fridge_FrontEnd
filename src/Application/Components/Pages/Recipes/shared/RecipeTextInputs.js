@@ -3,44 +3,52 @@ import InputField from "../../../Reusable/BasicInputField";
 import { addRecipeStyles } from "../RecipesPageStyles";
 
 const RecipeTextInputs = React.memo(
-  ({ inputState, handleSetValue }) => {
+  ({ inputState, handleSetValue, handleOnBlur }) => {
     const classes = addRecipeStyles();
-    const { name, cookingTime, description } = inputState;
+    const { values, touched, errors } = inputState;
     return (
       <Fragment>
         <div className={classes.IngredientRow}>
           <InputField
-            value={name}
+            value={values.name}
             onChange={handleSetValue}
+            handleOnBlur={handleOnBlur}
             name="name"
             label="Recipe name"
             additionalClass={classes.RecipeNameInput}
+            touched={touched?.name}
+            error={errors?.name}
           />
           <InputField
-            value={cookingTime}
+            value={values.cookingTime}
             onChange={handleSetValue}
+            handleOnBlur={handleOnBlur}
             name="cookingTime"
             label="Cooking time (min)"
             type="number"
             additionalClass={classes.RecipeCookingTimeInput}
+            touched={touched?.cookingTime}
+            error={errors?.cookingTime}
           />
         </div>
         <InputField
-          value={description}
+          value={values.description}
           onChange={handleSetValue}
+          handleOnBlur={handleOnBlur}
           multiline
           rows={4}
           name="description"
           label="Description"
+          touched={touched?.description}
+          error={errors?.description}
         />
       </Fragment>
     );
   },
   (prevProps, nextProps) => {
     if (
-      prevProps.inputState.name !== nextProps.inputState.name ||
-      prevProps.inputState.description !== nextProps.inputState.description ||
-      prevProps.inputState.cookingTime !== nextProps.inputState.cookingTime
+      JSON.stringify(prevProps.inputState) !==
+      JSON.stringify(nextProps.inputState)
     ) {
       return false;
     } else return true;

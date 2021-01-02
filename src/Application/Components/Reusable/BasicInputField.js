@@ -32,7 +32,7 @@ const InputField = ({
         rows={rows}
         fullWidth={fullWidth}
         disabled={disabled}
-        error={error && touched}
+        error={error?.length > 0 && touched}
         helperText={error && touched ? error : null}
         onBlur={handleOnBlur}
       />

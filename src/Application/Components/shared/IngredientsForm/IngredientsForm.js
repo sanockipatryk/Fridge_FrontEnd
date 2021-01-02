@@ -11,10 +11,11 @@ import {
   getPossibleIngredientCategories,
   getUnselectedIngredients,
 } from "./ingredientsFormFunctions";
+import IngredientFormList from "./IngredientFormList";
 
 const IngredientsForm = ({
   children,
-  inputState,
+  ingredientsState,
   formType,
   action,
   ingredientsList,
@@ -23,6 +24,7 @@ const IngredientsForm = ({
   handleSetIngredient,
   handleSetIngredientCategory,
   handleSetQuantity,
+  handleOnBlurQuantity,
   handleRemoveIngredientFromList,
   handleAddNextIngredient,
   isAuthenticated,
@@ -30,7 +32,6 @@ const IngredientsForm = ({
   history,
 }) => {
   const classes = useStyles();
-  const ingredientsInState = getAddedIngredients(inputState);
 
   return (
     <Grid container item xs={12} justify="center" alignItems="center">
@@ -45,33 +46,26 @@ const IngredientsForm = ({
                 className={classes.Form}
               >
                 {children}
-                {inputState?.map((item, index) => (
-                  <IngredientsFormRow
-                    key={index}
-                    itemState={{ ...item }}
-                    formType={formType}
-                    ingredientsList={getUnselectedIngredients(
-                      inputState,
-                      ingredientsList,
-                      item.ingredientId
-                    )}
-                    addedIngredients={[...getAddedIngredients(inputState)]}
-                    ingredientsCategoriesList={getPossibleIngredientCategories(
-                      ingredientsInState,
-                      ingredientsList,
-                      ingredientsCategoriesList,
-                      item.ingredientCategoryId
-                    )}
-                    handleSetIngredient={handleSetIngredient}
-                    handleSetIngredientCategory={handleSetIngredientCategory}
-                    handleSetQuantity={handleSetQuantity}
-                    handleRemoveIngredientFromList={
-                      handleRemoveIngredientFromList
-                    }
-                  />
-                ))}
+                <IngredientFormList
+                  ingredientsState={ingredientsState}
+                  formType={formType}
+                  ingredientsList={ingredientsList}
+                  ingredientsCategoriesList={ingredientsCategoriesList}
+                  handleSetIngredient={handleSetIngredient}
+                  handleSetIngredientCategory={handleSetIngredientCategory}
+                  handleSetQuantity={handleSetQuantity}
+                  handleOnBlurQuantity={handleOnBlurQuantity}
+                  handleRemoveIngredientFromList={
+                    handleRemoveIngredientFromList
+                  }
+                  getUnselectedIngredients={getUnselectedIngredients}
+                  getAddedIngredients={getAddedIngredients}
+                  getPossibleIngredientCategories={
+                    getPossibleIngredientCategories
+                  }
+                />
                 <AddIngredientButton
-                  ingredients={inputState}
+                  ingredients={ingredientsState}
                   handleAddNextIngredient={handleAddNextIngredient}
                 />
                 <FormSubmitButtons

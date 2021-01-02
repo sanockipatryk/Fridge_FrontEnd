@@ -53,9 +53,9 @@ export const addRecipeStyles = makeStyles((theme) => ({
     justifyContent: "space-between",
   },
   RecipeNameInput: {
-    flexBasis: "79%",
+    flexBasis: "74%",
   },
   RecipeCookingTimeInput: {
-    flexBasis: "20%",
+    flexBasis: "25%",
   },
 }));

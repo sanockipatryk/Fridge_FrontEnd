@@ -1,26 +1,33 @@
-import { validateForm } from "../../../Validations/validations";
+import {
+  validateForm,
+  validateSingleTextField,
+} from "../../../Validations/validations";
 
 export const handleSetValue = (state, setState, schema) => async (event) => {
   const { name, value } = event.target;
-  let schemaErrors;
+  let err;
+  if (state.touched[name] === true)
+    err = await validateSingleTextField(schema, name, value);
+  else err = null;
+
   let newInputState = {
     ...state,
     values: {
       ...state.values,
       [name]: value,
     },
-  };
-  schemaErrors = await validateForm(schema, newInputState.values);
-  newInputState = {
-    ...newInputState,
-    errors: { ...schemaErrors },
+    errors: {
+      ...state.errors,
+      [name]: err,
+    },
   };
   setState(newInputState);
 };
 
 export const handleOnBlur = (state, setState, schema) => async (event) => {
-  const { name } = event.target;
-  const schemaErrors = await validateForm(schema, state.values);
+  const { name, value } = event.target;
+  const err = await validateSingleTextField(schema, name, value);
+
   const newState = {
     ...state,
     touched: {
@@ -28,7 +35,8 @@ export const handleOnBlur = (state, setState, schema) => async (event) => {
       [name]: true,
     },
     errors: {
-      ...schemaErrors,
+      ...state.errors,
+      [name]: err,
     },
   };
   setState(newState);

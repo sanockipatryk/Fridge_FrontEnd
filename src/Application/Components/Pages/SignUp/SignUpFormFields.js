@@ -15,6 +15,7 @@ const SignUpFormFields = ({
         touched={touched?.firstName}
         error={errors?.firstName}
         onChange={handleSetValue}
+        handleOnBlur={handleOnBlur}
         name="firstName"
         label="First name"
         disabled={isLoading}

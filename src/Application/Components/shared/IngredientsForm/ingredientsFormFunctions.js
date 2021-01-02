@@ -1,72 +1,124 @@
-export const handleSetValue = (inputState, setInputState) => (event) => {
+import {
+  validateForm,
+  validateSingleQuantityField,
+} from "../../../../Validations/validations";
+
+export const handleSetValue = (ingredientsState, setIngredientsState) => (
+  event
+) => {
   const { name, value } = event.target;
-  setInputState({
-    ...inputState,
-    [name]: value,
+  setIngredientsState({
+    ...ingredientsState,
+    values: {
+      ...ingredientsState.values,
+      [name]: value,
+    },
   });
 };
 
-export const handleSetIngredient = (inputState, setInputState) => (
+export const handleSetIngredient = (ingredientsState, setIngredientsState) => (
   event,
   id
 ) => {
-  let currentIngredients = [...inputState];
-  currentIngredients.find((i) => i.id === id).ingredientId = event.target.value;
-  setInputState(currentIngredients);
+  const index = ingredientsState.findIndex((i) => i.id === id);
+  const old = ingredientsState[index];
+  const updated = { ...old, ingredientId: event.target.value };
+  const clone = [...ingredientsState];
+  clone[index] = updated;
+
+  setIngredientsState(clone);
 };
 
 export const handleSetIngredientCategory = (
-  inputState,
-  setInputState,
+  ingredientsState,
+  setIngredientsState,
   ingredientsList
 ) => (event, id) => {
-  let currentIngredients = [...inputState];
-  currentIngredients.find((i) => i.id === id).ingredientCategoryId =
-    event.target.value;
+  const { value } = event.target;
+  const addedIngredients = getAddedIngredients(ingredientsState);
 
-  const addedIngredients = getAddedIngredients(inputState);
+  const index = ingredientsState.findIndex((i) => i.id === id);
+  const old = ingredientsState[index];
+  const updated = {
+    ...old,
+    ingredientCategoryId: value,
+    ingredientId: ingredientsList.filter(
+      (ingredient) =>
+        ingredient.categoryId === value &&
+        !addedIngredients.includes(ingredient.id)
+    )[0]?.id,
+  };
+  const clone = [...ingredientsState];
+  clone[index] = updated;
 
-  currentIngredients.find(
-    (i) => i.id === id
-  ).ingredientId = ingredientsList.filter(
-    (ingredient) =>
-      ingredient.categoryId === event.target.value &&
-      !addedIngredients.includes(ingredient.id)
-  )[0]?.id;
-
-  setInputState(currentIngredients);
+  setIngredientsState(clone);
 };
 
-export const handleSetQuantity = (inputState, setInputState) => (event, id) => {
-  console.log(inputState);
-  let currentIngredients = [...inputState];
-  currentIngredients.find((i) => i.id === id).quantity = event.target.value;
-  setInputState(currentIngredients);
+export const handleSetQuantity = (
+  ingredientsState,
+  setIngredientsState,
+  schema
+) => async (event, id) => {
+  const { value } = event.target;
+  const index = ingredientsState.findIndex((i) => i.id === id);
+  let err;
+
+  if (ingredientsState[index].quantityTouched === true)
+    err = await validateSingleQuantityField(schema, value);
+  else err = null;
+
+  const old = ingredientsState[index];
+  const updated = { ...old, quantity: value, quantityError: err };
+  const clone = [...ingredientsState];
+  clone[index] = updated;
+
+  setIngredientsState(clone);
 };
 
-export const handleRemoveIngredientFromList = (inputState, setInputState) => (
-  id
-) => {
-  const currentIngredients = [...inputState];
+export const handleOnBlurQuantity = (
+  ingredientsState,
+  setIngredientsState,
+  schema
+) => async (event, id) => {
+  if (ingredientsState.find((i) => i.id === id).quantityTouched === false) {
+    const { value } = event.target;
+    let err;
+    err = await validateSingleQuantityField(schema, value);
 
-  setInputState(currentIngredients.filter((i) => i.id !== id));
+    const index = ingredientsState.findIndex((i) => i.id === id);
+    const old = ingredientsState[index];
+    const updated = { ...old, quantityTouched: true, quantityError: err };
+    const clone = [...ingredientsState];
+    clone[index] = updated;
+
+    setIngredientsState(clone);
+  }
+};
+
+export const handleRemoveIngredientFromList = (
+  ingredientsState,
+  setIngredientsState
+) => (id) => {
+  const clone = [...ingredientsState];
+  setIngredientsState(clone.filter((i) => i.id !== id));
 };
 
 // filtering ingredientList from already ingredients that were already added to the form
 export const getUnselectedIngredients = (
-  inputState,
+  ingredientsState,
   ingredientsList,
   id = null
 ) => {
-  const ingredientsToDisplay = getAddedIngredients(inputState)?.filter(
+  const ingredientsToDisplay = getAddedIngredients(ingredientsState)?.filter(
     (i) => i !== id
   );
   return ingredientsList.filter((e) => !ingredientsToDisplay.includes(e.id));
 };
 
 // using map to return a list of ingredientId's that were already added to the form
-export const getAddedIngredients = (inputState) => {
-  return inputState?.map((i) => i?.ingredientId);
+export const getAddedIngredients = (ingredientsState) => {
+  const clone = [...ingredientsState];
+  return clone?.map((i) => i?.ingredientId);
 };
 
 // returning ingredient categories that have a ingredient to select from
@@ -92,13 +144,13 @@ export const getPossibleIngredientCategories = (
 };
 
 export const handleAddNextIngredient = (
-  inputState,
-  setInputState,
+  ingredientsState,
+  setIngredientsState,
   ingredientsCategoriesList,
   ingredientsList
 ) => () => {
-  let currentIngredients = [...inputState];
-  const currentlyAddedIngredients = getAddedIngredients(inputState);
+  const clone = [...ingredientsState];
+  const currentlyAddedIngredients = getAddedIngredients(clone);
   let newCategoryId;
 
   const possibleCategories = getPossibleIngredientCategories(
@@ -115,25 +167,93 @@ export const handleAddNextIngredient = (
       ingredient.categoryId === newCategoryId &&
       !currentlyAddedIngredients?.includes(ingredient.id)
   )[0]?.id;
+
   let maxId;
-  currentIngredients.length > 0
-    ? (maxId = currentIngredients[currentIngredients.length - 1]?.id)
-    : (maxId = -1);
+  clone.length > 0 ? (maxId = clone[clone.length - 1]?.id) : (maxId = -1);
 
   if (newCategoryId !== undefined)
-    setInputState([
-      ...inputState,
+    setIngredientsState([
+      ...clone,
       {
         id: ++maxId,
         ingredientCategoryId: newCategoryId,
         ingredientId: newIngredientId,
         quantity: 0,
+        quantityError: "",
+        quantityTouched: false,
       },
     ]);
 };
 
+export const handleSubmitPartial = async (
+  schema,
+  textInputState,
+  setTextInputState,
+  ingredientsState,
+  setIngredientsState
+) => {
+  let touchedAll = {};
+  Object.keys(textInputState.touched).forEach(
+    (t) => (touchedAll = { ...touchedAll, [t]: true })
+  );
+  const cloneIngredients = [...ingredientsState];
+  const cloneInputState = { ...textInputState };
+  const quantities = cloneIngredients.map((i) => i.quantity);
+  const values = {
+    ...cloneInputState.values,
+    quantities: quantities,
+  };
+  let schemaErrors = await validateForm(schema, values);
+
+  let textInputStateErrors = {};
+  Object.keys(textInputState.values).forEach(
+    (t) =>
+      (textInputStateErrors = { ...textInputStateErrors, [t]: schemaErrors[t] })
+  );
+
+  setTextInputState({
+    ...cloneInputState,
+    touched: touchedAll,
+    errors: textInputStateErrors,
+  });
+
+  const newIngredients = [];
+  cloneIngredients.forEach((i) => {
+    newIngredients.push({
+      ...i,
+      quantityError: schemaErrors[`quantities[${i.id}]`] ?? "",
+      quantityTouched: true,
+    });
+  });
+
+  setIngredientsState(newIngredients);
+};
+
+export const checkValidation = async (
+  schema,
+  textInputState,
+  ingredientsState
+) => {
+  const cloneIngredients = [...ingredientsState];
+  const cloneInputState = { ...textInputState };
+
+  const quantities = cloneIngredients.map((i) => i.quantity);
+  const values = {
+    ...cloneInputState.values,
+    quantities: [...quantities],
+  };
+  const schemaErrors = await validateForm(schema, values)
+    .then((e) => e)
+    .catch();
+
+  return (
+    Object.keys(schemaErrors).length === 0 &&
+    schemaErrors.constructor === Object
+  );
+};
+
 export const prepareIngredients = (ingredients) => {
-  let currentIngredients = [];
+  const currentIngredients = [];
   ingredients.forEach((i) => {
     currentIngredients.push({
       ingredientId: i.ingredientId,

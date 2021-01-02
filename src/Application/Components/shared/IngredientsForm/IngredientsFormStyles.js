@@ -22,11 +22,11 @@ const useStyles = makeStyles((theme) => ({
   },
   FormControlWide: {
     paddingBottom: "20px",
-    flexBasis: "39%",
+    flexBasis: "36.5%",
   },
   FormControlSlim: {
     paddingBottom: "20px",
-    flexBasis: "20%",
+    flexBasis: "25%",
   },
   RemoveIngredientButton: {
     display: "block",

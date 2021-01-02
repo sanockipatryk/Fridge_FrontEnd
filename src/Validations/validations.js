@@ -28,3 +28,21 @@ export const validateForm = (schema, values) =>
       }
     );
   });
+
+export const validateSingleTextField = async (schema, field, value) => {
+  const err = await schema
+    .validateAt(field, { [field]: value })
+    .then(() => "")
+    .catch((err) => err?.message);
+
+  return err;
+};
+
+export const validateSingleQuantityField = async (schema, value) => {
+  const err = await schema
+    .validateAt("quantities[0]", { quantities: [value] })
+    .then(() => "")
+    .catch((err) => err?.message);
+
+  return err;
+};

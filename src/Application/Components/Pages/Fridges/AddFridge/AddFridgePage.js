@@ -7,16 +7,23 @@ import {
   fridgeAddedSuccess,
 } from "../../../../SSOT/toastMessages";
 import {
-  handleSetValue,
   handleSetIngredient,
   handleSetIngredientCategory,
   handleSetQuantity,
   handleRemoveIngredientFromList,
   handleAddNextIngredient,
   prepareIngredients,
+  handleOnBlurQuantity,
+  handleSubmitPartial,
+  checkValidation,
 } from "../../../shared/IngredientsForm/ingredientsFormFunctions";
+import {
+  handleOnBlur,
+  handleSetValue,
+} from "../../../Reusable/textInputHandlers";
 import FridgeTextInputs from "../shared/FridgeTextInputs";
 import IngredientsForm from "../../../shared/IngredientsForm/IngredientsForm";
+import { fridgeFormSchema } from "../../../../../Validations/FridgeFormValidation";
 
 const AddFridgePage = () => {
   const isAuthenticated = useSelector((state) => state.signIn.isAuthenticated);
@@ -25,8 +32,15 @@ const AddFridgePage = () => {
   );
 
   const initialTextInputState = {
-    name: "",
-    description: "",
+    values: {
+      name: "",
+      description: "",
+    },
+    touched: {
+      name: false,
+      description: false,
+    },
+    errors: {},
   };
   const initialInputState = [];
 
@@ -38,29 +52,40 @@ const AddFridgePage = () => {
   );
   const [fridgeAdded, setFridgeAdded] = React.useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const { name, description } = textInputState;
-    const requestData = {
-      name: name,
-      description: description,
-      ingredients:
-        ingredientsState?.length > 0
-          ? [...prepareIngredients(ingredientsState)]
-          : [],
-    };
-    axios
-      .post("https://localhost:44356/api/Fridges/createFridge", requestData)
-      .then(() => toast.success(fridgeAddedSuccess))
-      .then(() => setFridgeAdded(true))
-      .catch((err) => toast.error(fridgeAddedError));
+    handleSubmitPartial(
+      fridgeFormSchema,
+      textInputState,
+      setTextInputState,
+      ingredientsState,
+      setIngredientsState
+    );
+    if (
+      await checkValidation(fridgeFormSchema, textInputState, ingredientsState)
+    ) {
+      const { name, description } = textInputState.values;
+      const requestData = {
+        name: name,
+        description: description,
+        ingredients:
+          ingredientsState?.length > 0
+            ? [...prepareIngredients(ingredientsState)]
+            : [],
+      };
+      axios
+        .post("https://localhost:44356/api/Fridges/createFridge", requestData)
+        .then(() => toast.success(fridgeAddedSuccess))
+        .then(() => setFridgeAdded(true))
+        .catch((err) => toast.error(fridgeAddedError));
+    }
   };
 
   return (
     <IngredientsForm
-      inputState={ingredientsState}
       formType="fridge"
       action="add"
+      ingredientsState={ingredientsState}
       ingredientsList={ingredientsList}
       ingredientsCategoriesList={ingredientsCategoriesList}
       handleSubmit={handleSubmit}
@@ -75,7 +100,13 @@ const AddFridgePage = () => {
       )}
       handleSetQuantity={handleSetQuantity(
         ingredientsState,
-        setIngredientsState
+        setIngredientsState,
+        fridgeFormSchema
+      )}
+      handleOnBlurQuantity={handleOnBlurQuantity(
+        ingredientsState,
+        setIngredientsState,
+        fridgeFormSchema
       )}
       handleRemoveIngredientFromList={handleRemoveIngredientFromList(
         ingredientsState,
@@ -92,7 +123,16 @@ const AddFridgePage = () => {
     >
       <FridgeTextInputs
         inputState={textInputState}
-        handleSetValue={handleSetValue(textInputState, setTextInputState)}
+        handleSetValue={handleSetValue(
+          textInputState,
+          setTextInputState,
+          fridgeFormSchema
+        )}
+        handleOnBlur={handleOnBlur(
+          textInputState,
+          setTextInputState,
+          fridgeFormSchema
+        )}
       />
     </IngredientsForm>
   );
