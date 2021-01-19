@@ -50,10 +50,14 @@ const SignUpPage = () => {
   const [inputState, setInputState] = React.useState(initialState);
   const [registerSuccess, setRegisterSuccess] = React.useState(false);
 
-  const handleRegister = (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
-    handleSubmitPartial(signUpSchema, inputState, setInputState);
-    if (checkValidation(inputState)) {
+    const updatedState = await handleSubmitPartial(
+      signUpSchema,
+      inputState,
+      setInputState
+    );
+    if (checkValidation(updatedState)) {
       const {
         eMail,
         firstName,

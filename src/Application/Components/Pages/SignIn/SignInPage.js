@@ -47,8 +47,12 @@ const SignInPage = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    handleSubmitPartial(signInSchema, inputState, setInputState);
-    if (checkValidation(inputState)) {
+    const updatedState = await handleSubmitPartial(
+      signInSchema,
+      inputState,
+      setInputState
+    );
+    if (checkValidation(updatedState)) {
       const { eMail, password } = inputState.values;
       dispatch(setUserSigningIn());
       axios

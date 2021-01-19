@@ -4,8 +4,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 import {
-  recipeEditedError,
-  recipeEditedSuccess,
+  fridgeAddedError,
+  fridgeAddedSuccess,
+  fridgeEditedError,
+  fridgeEditedSuccess,
 } from "../../../../SSOT/toastMessages";
 import {
   handleSetIngredient,
@@ -14,8 +16,8 @@ import {
   handleRemoveIngredientFromList,
   handleAddNextIngredient,
   prepareIngredients,
-  handleSubmitPartial,
   handleOnBlurQuantity,
+  handleSubmitPartial,
   checkValidation,
   handleChangePage,
 } from "../../../shared/IngredientsForm/ingredientsFormFunctions";
@@ -23,19 +25,19 @@ import {
   handleOnBlur,
   handleSetValue,
 } from "../../../Reusable/textInputHandlers";
-import RecipeTextInputs from "../shared/RecipeTextInputs";
+import FridgeTextInputs from "../shared/FridgeTextInputs";
 import IngredientsForm from "../../../shared/IngredientsForm/IngredientsForm";
-import { recipeFormSchema } from "../../../../../Validations/RecipeFormValidation";
+import { fridgeFormSchema } from "../../../../../Validations/FridgeFormValidation";
 import {
-  setAddingRecipe,
-  setAddingRecipeDone,
-} from "../../../../../store/actions/recipes";
+  setAddingFridge,
+  setAddingFridgeDone,
+} from "../../../../../store/actions/fridges";
 
-const EditRecipePage = () => {
+const EditFridgePage = () => {
   const dispatch = useDispatch();
 
   const isAuthenticated = useSelector((state) => state.signIn.isAuthenticated);
-  const addingRecipe = useSelector((state) => state.recipes.addingRecipe);
+  const addingFridge = useSelector((state) => state.fridges.addingFridge);
 
   const { ingredientsList, ingredientsCategoriesList } = useSelector(
     (state) => state.ingredients
@@ -45,12 +47,10 @@ const EditRecipePage = () => {
     values: {
       name: "",
       description: "",
-      cookingTime: 0,
     },
     touched: {
       name: false,
       description: false,
-      cookingTime: false,
     },
     errors: {},
   };
@@ -61,7 +61,7 @@ const EditRecipePage = () => {
   };
 
   let location = useLocation();
-  const { recipe } = location?.state;
+  const { fridge } = location?.state;
 
   const [textInputState, setTextInputState] = React.useState(
     initialTextInputState
@@ -69,12 +69,12 @@ const EditRecipePage = () => {
   const [ingredientsState, setIngredientsState] = React.useState(
     initialInputState
   );
-  const [recipeAdded, setRecipeAdded] = React.useState(false);
+  const [fridgeAdded, setFridgeAdded] = React.useState(false);
   const [pagination, setPagination] = React.useState(initialPaginationState);
 
   useEffect(() => {
     const initializeData = () => {
-      const currentIngredients = [...recipe?.ingredients];
+      const currentIngredients = [...fridge?.ingredients];
       const initialIngredients = [];
 
       currentIngredients.forEach((i, index) => {
@@ -91,57 +91,57 @@ const EditRecipePage = () => {
 
       setTextInputState({
         values: {
-          name: recipe?.name,
-          description: recipe?.description,
-          cookingTime: recipe?.cookingTime,
+          name: fridge?.name,
+          description: fridge?.description,
         },
         touched: {
           name: false,
           description: false,
-          cookingTime: false,
         },
         errors: {},
       });
     };
     initializeData();
-  }, [recipe]);
+  }, [fridge]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     handleSubmitPartial(
-      recipeFormSchema,
+      fridgeFormSchema,
       textInputState,
       setTextInputState,
       ingredientsState,
       setIngredientsState
     );
     if (
-      await checkValidation(recipeFormSchema, textInputState, ingredientsState)
+      await checkValidation(fridgeFormSchema, textInputState, ingredientsState)
     ) {
-      dispatch(setAddingRecipe());
-      const { name, description, cookingTime } = textInputState.values;
+      dispatch(setAddingFridge());
+      const { name, description } = textInputState.values;
       const requestData = {
-        recipeId: recipe.id,
+        fridgeId: fridge.id,
         name: name,
         description: description,
-        cookingTime: parseInt(cookingTime),
-        ingredients: [...prepareIngredients(ingredientsState)],
+        ingredients:
+          ingredientsState?.length > 0
+            ? [...prepareIngredients(ingredientsState)]
+            : [],
       };
       axios
-        .put("https://localhost:44356/api/Recipes/editRecipe", requestData)
-        .then(() => dispatch(setAddingRecipeDone()))
-        .then(() => toast.success(recipeEditedSuccess))
-        .then(() => setRecipeAdded(true))
+        .put("https://localhost:44356/api/Fridges/editFridge", requestData)
+        .then(() => dispatch(setAddingFridgeDone()))
+        .then(() => toast.success(fridgeEditedSuccess))
+        .then(() => setFridgeAdded(true))
         .catch((err) => {
-          dispatch(setAddingRecipeDone());
-          toast.error(recipeEditedError);
+          dispatch(setAddingFridgeDone());
+          toast.error(fridgeEditedError);
         });
     }
   };
 
   return (
     <IngredientsForm
-      formType="recipe"
+      formType="fridge"
       action="edit"
       ingredientsState={ingredientsState}
       ingredientsList={ingredientsList}
@@ -159,12 +159,12 @@ const EditRecipePage = () => {
       handleSetQuantity={handleSetQuantity(
         ingredientsState,
         setIngredientsState,
-        recipeFormSchema
+        fridgeFormSchema
       )}
       handleOnBlurQuantity={handleOnBlurQuantity(
         ingredientsState,
         setIngredientsState,
-        recipeFormSchema
+        fridgeFormSchema
       )}
       handleRemoveIngredientFromList={handleRemoveIngredientFromList(
         ingredientsState,
@@ -179,25 +179,25 @@ const EditRecipePage = () => {
       pagination={pagination}
       handleChangePage={handleChangePage(pagination, setPagination)}
       isAuthenticated={isAuthenticated}
-      elementAdded={recipeAdded}
-      formLoading={addingRecipe}
-      formLoadingText="Editing recipe"
+      elementAdded={fridgeAdded}
+      formLoading={addingFridge}
+      formLoadingText="Editing fridge"
     >
-      <RecipeTextInputs
+      <FridgeTextInputs
         inputState={textInputState}
         handleSetValue={handleSetValue(
           textInputState,
           setTextInputState,
-          recipeFormSchema
+          fridgeFormSchema
         )}
         handleOnBlur={handleOnBlur(
           textInputState,
           setTextInputState,
-          recipeFormSchema
+          fridgeFormSchema
         )}
       />
     </IngredientsForm>
   );
 };
 
-export default EditRecipePage;
+export default EditFridgePage;

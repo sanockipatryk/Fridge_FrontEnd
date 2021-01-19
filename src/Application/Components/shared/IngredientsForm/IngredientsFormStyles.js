@@ -51,7 +51,7 @@ const useStyles = makeStyles((theme) => ({
     color: "#fff",
   },
   NextIngredientButton: {
-    marginTop: "-20px",
+    marginBottom: "20px",
   },
   CancelButton: {
     marginRight: "5px",
@@ -63,6 +63,20 @@ const useStyles = makeStyles((theme) => ({
   },
   CancelButtonNoMargin: {
     marginRight: "0",
+  },
+  PaginationButtons: {
+    marginTop: "-20px",
+    marginBottom: "20px",
+  },
+  PaginationButton: {
+    color: "black !important",
+    backgroundColor: "white !important",
+  },
+  PaginationButtonMove: {
+    padding: "0 ",
+  },
+  PaginationButtonHidden: {
+    opacity: "0",
   },
 }));
 

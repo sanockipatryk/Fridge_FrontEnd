@@ -5,6 +5,8 @@ import {
 
 export const handleSetValue = (state, setState, schema) => async (event) => {
   const { name, value } = event.target;
+  let newValue = value;
+  if (name === "cookingTime") newValue = parseInt(value);
   let err;
   if (state.touched[name] === true)
     err = await validateSingleTextField(schema, name, value);
@@ -14,7 +16,7 @@ export const handleSetValue = (state, setState, schema) => async (event) => {
     ...state,
     values: {
       ...state.values,
-      [name]: value,
+      [name]: newValue,
     },
     errors: {
       ...state.errors,
@@ -26,20 +28,22 @@ export const handleSetValue = (state, setState, schema) => async (event) => {
 
 export const handleOnBlur = (state, setState, schema) => async (event) => {
   const { name, value } = event.target;
-  const err = await validateSingleTextField(schema, name, value);
+  if (state?.touched[name] === false) {
+    const err = await validateSingleTextField(schema, name, value);
 
-  const newState = {
-    ...state,
-    touched: {
-      ...state.touched,
-      [name]: true,
-    },
-    errors: {
-      ...state.errors,
-      [name]: err,
-    },
-  };
-  setState(newState);
+    const newState = {
+      ...state,
+      touched: {
+        ...state.touched,
+        [name]: true,
+      },
+      errors: {
+        ...state.errors,
+        [name]: err,
+      },
+    };
+    setState(newState);
+  }
 };
 
 export const handleSubmitPartial = async (schema, state, setState) => {
@@ -47,15 +51,9 @@ export const handleSubmitPartial = async (schema, state, setState) => {
   Object.keys(state.touched).forEach(
     (t) => (touchedAll = { ...touchedAll, [t]: true })
   );
-
   const err = await validateForm(schema, state.values);
-  setState({
-    ...state,
-    touched: {
-      ...touchedAll,
-    },
-    errors: {
-      ...err,
-    },
-  });
+  const old = { ...state };
+  const updated = { ...old, touched: { ...touchedAll }, errors: { ...err } };
+  setState(updated);
+  return updated;
 };

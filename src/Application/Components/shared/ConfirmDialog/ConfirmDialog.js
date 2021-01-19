@@ -6,12 +6,21 @@ import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import useStyles from "./ConfirmDialogStyles";
+import LoadingIndicator from "../../Reusable/LoadingIndicator";
 
-const ConfirmDialog = ({ open, handleClose, handleDelete, content }) => {
+const ConfirmDialog = ({
+  open,
+  handleClose,
+  handleDelete,
+  deleting,
+  deletingMessage,
+  content,
+}) => {
   const classes = useStyles();
   return (
     <div>
       <Dialog
+        fullWidth
         open={open}
         onClose={() => handleClose()}
         aria-labelledby="alert-dialog-title"
@@ -23,23 +32,27 @@ const ConfirmDialog = ({ open, handleClose, handleDelete, content }) => {
             {content.message}
           </DialogContentText>
         </DialogContent>
-        <DialogActions>
-          <Button
-            onClick={() => handleClose()}
-            variant="contained"
-            className={`${classes.CancelButton} ${classes.CancelButtonNoMargin}`}
-          >
-            {content.no}
-          </Button>
-          <Button
-            onClick={handleDelete}
-            color="secondary"
-            variant="contained"
-            autoFocus
-          >
-            {content.yes}
-          </Button>
-        </DialogActions>
+
+        {!deleting ? (
+          <DialogActions>
+            <Button
+              onClick={() => handleClose()}
+              variant="contained"
+              className={`${classes.CancelButton} ${classes.CancelButtonNoMargin}`}
+            >
+              {content.no}
+            </Button>
+            <Button
+              onClick={handleDelete}
+              color="secondary"
+              variant="contained"
+            >
+              {content.yes}
+            </Button>
+          </DialogActions>
+        ) : (
+          <LoadingIndicator displayText={deletingMessage} />
+        )}
       </Dialog>
     </div>
   );

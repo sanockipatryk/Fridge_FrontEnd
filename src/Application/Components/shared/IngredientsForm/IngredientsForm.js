@@ -12,6 +12,7 @@ import {
   getUnselectedIngredients,
 } from "./ingredientsFormFunctions";
 import IngredientFormList from "./IngredientFormList";
+import FormPaginationButtons from "./FormPaginationButtons";
 
 const IngredientsForm = ({
   children,
@@ -27,8 +28,12 @@ const IngredientsForm = ({
   handleOnBlurQuantity,
   handleRemoveIngredientFromList,
   handleAddNextIngredient,
+  pagination,
+  handleChangePage,
   isAuthenticated,
   elementAdded,
+  formLoading,
+  formLoadingText,
   history,
 }) => {
   const classes = useStyles();
@@ -46,6 +51,10 @@ const IngredientsForm = ({
                 className={classes.Form}
               >
                 {children}
+                <AddIngredientButton
+                  ingredients={ingredientsState}
+                  handleAddNextIngredient={handleAddNextIngredient}
+                />
                 <IngredientFormList
                   ingredientsState={ingredientsState}
                   formType={formType}
@@ -63,15 +72,19 @@ const IngredientsForm = ({
                   getPossibleIngredientCategories={
                     getPossibleIngredientCategories
                   }
+                  pagination={pagination}
                 />
-                <AddIngredientButton
-                  ingredients={ingredientsState}
-                  handleAddNextIngredient={handleAddNextIngredient}
+                <FormPaginationButtons
+                  pagination={pagination}
+                  handleChangePage={handleChangePage}
+                  listLength={ingredientsState.length}
                 />
                 <FormSubmitButtons
                   action={action}
                   formType={formType}
                   history={history}
+                  formLoading={formLoading}
+                  formLoadingText={formLoadingText}
                 />
               </form>
             ) : null}

@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import axios from "axios";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import {
   recipeAddedError,
@@ -16,6 +16,7 @@ import {
   handleOnBlurQuantity,
   handleSubmitPartial,
   checkValidation,
+  handleChangePage,
 } from "../../../shared/IngredientsForm/ingredientsFormFunctions";
 import {
   handleOnBlur,
@@ -24,9 +25,17 @@ import {
 import RecipeTextInputs from "../shared/RecipeTextInputs";
 import IngredientsForm from "../../../shared/IngredientsForm/IngredientsForm";
 import { recipeFormSchema } from "../../../../../Validations/RecipeFormValidation";
+import {
+  setAddingRecipe,
+  setAddingRecipeDone,
+} from "../../../../../store/actions/recipes";
 
 const AddRecipePage = () => {
+  const dispatch = useDispatch();
+
   const isAuthenticated = useSelector((state) => state.signIn.isAuthenticated);
+  const addingRecipe = useSelector((state) => state.recipes.addingRecipe);
+
   const { ingredientsList, ingredientsCategoriesList } = useSelector(
     (state) => state.ingredients
   );
@@ -54,6 +63,10 @@ const AddRecipePage = () => {
       quantityErorr: "",
     },
   ];
+  const initialPaginationState = {
+    page: 0,
+    itemsPerPage: 10,
+  };
 
   const [textInputState, setTextInputState] = React.useState(
     initialTextInputState
@@ -62,6 +75,7 @@ const AddRecipePage = () => {
     initialInputState
   );
   const [recipeAdded, setRecipeAdded] = React.useState(false);
+  const [pagination, setPagination] = React.useState(initialPaginationState);
 
   useEffect(() => {
     const firstCategoryId = ingredientsCategoriesList[0]?.id;
@@ -84,7 +98,7 @@ const AddRecipePage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    handleSubmitPartial(
+    await handleSubmitPartial(
       recipeFormSchema,
       textInputState,
       setTextInputState,
@@ -94,6 +108,7 @@ const AddRecipePage = () => {
     if (
       await checkValidation(recipeFormSchema, textInputState, ingredientsState)
     ) {
+      dispatch(setAddingRecipe());
       const { name, description, cookingTime } = textInputState.values;
       const requestData = {
         name: name,
@@ -103,9 +118,13 @@ const AddRecipePage = () => {
       };
       axios
         .post("https://localhost:44356/api/Recipes/createRecipe", requestData)
+        .then(() => dispatch(setAddingRecipeDone()))
         .then(() => toast.success(recipeAddedSuccess))
         .then(() => setRecipeAdded(true))
-        .catch((err) => toast.error(recipeAddedError));
+        .catch((err) => {
+          dispatch(setAddingRecipeDone());
+          toast.error(recipeAddedError);
+        });
     }
   };
 
@@ -146,8 +165,12 @@ const AddRecipePage = () => {
         ingredientsCategoriesList,
         ingredientsList
       )}
+      pagination={pagination}
+      handleChangePage={handleChangePage(pagination, setPagination)}
       isAuthenticated={isAuthenticated}
       elementAdded={recipeAdded}
+      formLoading={addingRecipe}
+      formLoadingText="Adding recipe"
     >
       <RecipeTextInputs
         inputState={textInputState}

@@ -18,7 +18,7 @@ const QuantityInputField = ({
       fullWidth
     >
       <InputField
-        value={quantity}
+        value={quantity.toString()}
         onChange={(e) => handleSetQuantity(e, id)}
         handleOnBlur={(e) => handleOnBlurQuantity(e, id)}
         touched={quantityTouched}

@@ -1,10 +1,10 @@
-import React from "react";
+import React, { useEffect } from "react";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import {
-  fridgeAddedError,
-  fridgeAddedSuccess,
+  productsAddedToFridgeError,
+  productsAddedToFridgeSuccess,
 } from "../../../../SSOT/toastMessages";
 import {
   handleSetIngredient,
@@ -14,23 +14,21 @@ import {
   handleAddNextIngredient,
   prepareIngredients,
   handleOnBlurQuantity,
-  handleSubmitPartial,
-  checkValidation,
   handleChangePage,
+  handleSubmitPartialAddProducts,
+  checkValidationAddProducts,
 } from "../../../shared/IngredientsForm/ingredientsFormFunctions";
-import {
-  handleOnBlur,
-  handleSetValue,
-} from "../../../Reusable/textInputHandlers";
-import FridgeTextInputs from "../shared/FridgeTextInputs";
+
 import IngredientsForm from "../../../shared/IngredientsForm/IngredientsForm";
 import { fridgeFormSchema } from "../../../../../Validations/FridgeFormValidation";
+import { addProductsSchema } from "../../../../../Validations/AddProductsValidation";
+import { useLocation } from "react-router-dom";
 import {
   setAddingFridge,
   setAddingFridgeDone,
 } from "../../../../../store/actions/fridges";
 
-const AddFridgePage = () => {
+const AddProductsPage = () => {
   const dispatch = useDispatch();
 
   const isAuthenticated = useSelector((state) => state.signIn.isAuthenticated);
@@ -40,69 +38,80 @@ const AddFridgePage = () => {
     (state) => state.ingredients
   );
 
-  const initialTextInputState = {
-    values: {
-      name: "",
-      description: "",
+  const initialInputState = [
+    {
+      id: 0,
+      ingredientCategoryId: 0,
+      ingredientId: 0,
+      quantity: 0,
+      quantityTouched: false,
+      quantityErorr: "",
     },
-    touched: {
-      name: false,
-      description: false,
-    },
-    errors: {},
-  };
-  const initialInputState = [];
+  ];
   const initialPaginationState = {
     page: 0,
     itemsPerPage: 10,
   };
 
-  const [textInputState, setTextInputState] = React.useState(
-    initialTextInputState
-  );
+  let location = useLocation();
+  const { fridge } = location?.state;
+
   const [ingredientsState, setIngredientsState] = React.useState(
     initialInputState
   );
   const [fridgeAdded, setFridgeAdded] = React.useState(false);
   const [pagination, setPagination] = React.useState(initialPaginationState);
 
+  useEffect(() => {
+    const firstCategoryId = ingredientsCategoriesList[0]?.id;
+    const firstIngredientIdInCategory = ingredientsList.filter(
+      (i) => i?.categoryId === firstCategoryId
+    )[0]?.id;
+    setIngredientsState([
+      {
+        id: 0,
+        ingredientCategoryId: firstCategoryId,
+        ingredientId: firstIngredientIdInCategory
+          ? firstIngredientIdInCategory
+          : 0,
+        quantity: 0,
+        quantityError: "",
+        quantityTouched: false,
+      },
+    ]);
+  }, [ingredientsCategoriesList, ingredientsList]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    handleSubmitPartial(
-      fridgeFormSchema,
-      textInputState,
-      setTextInputState,
+    handleSubmitPartialAddProducts(
+      addProductsSchema,
       ingredientsState,
       setIngredientsState
     );
-    if (
-      await checkValidation(fridgeFormSchema, textInputState, ingredientsState)
-    ) {
+    if (await checkValidationAddProducts(addProductsSchema, ingredientsState)) {
       dispatch(setAddingFridge());
-      const { name, description } = textInputState.values;
       const requestData = {
-        name: name,
-        description: description,
+        fridgeId: fridge?.id,
         ingredients:
           ingredientsState?.length > 0
             ? [...prepareIngredients(ingredientsState)]
             : [],
       };
       axios
-        .post("https://localhost:44356/api/Fridges/createFridge", requestData)
+        .put("https://localhost:44356/api/Fridges/addProducts", requestData)
         .then(() => dispatch(setAddingFridgeDone()))
-        .then(() => toast.success(fridgeAddedSuccess))
+        .then(() => toast.success(productsAddedToFridgeSuccess))
         .then(() => setFridgeAdded(true))
         .catch((err) => {
           setAddingFridgeDone(true);
-          toast.error(fridgeAddedError);
+          toast.error(productsAddedToFridgeError);
         });
     }
   };
 
   return (
     <IngredientsForm
-      formType="fridge"
+      formType="addProducts"
       action="add"
       ingredientsState={ingredientsState}
       ingredientsList={ingredientsList}
@@ -142,23 +151,9 @@ const AddFridgePage = () => {
       isAuthenticated={isAuthenticated}
       elementAdded={fridgeAdded}
       formLoading={addingFridge}
-      formLoadingText="Adding fridge"
-    >
-      <FridgeTextInputs
-        inputState={textInputState}
-        handleSetValue={handleSetValue(
-          textInputState,
-          setTextInputState,
-          fridgeFormSchema
-        )}
-        handleOnBlur={handleOnBlur(
-          textInputState,
-          setTextInputState,
-          fridgeFormSchema
-        )}
-      />
-    </IngredientsForm>
+      formLoadingText="Adding products"
+    ></IngredientsForm>
   );
 };
 
-export default AddFridgePage;
+export default AddProductsPage;

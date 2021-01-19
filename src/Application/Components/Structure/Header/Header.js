@@ -31,7 +31,7 @@ const Header = () => {
   return (
     <Grid container item xs={12} className={classes.NavBar} alignItems="center">
       <CssBaseline>
-        <NavItem Route={HOME} />
+        {/* <NavItem Route={HOME} /> */}
         {!isAuthenticated ? (
           <Fragment>
             <NavItem Route={LOGIN} />

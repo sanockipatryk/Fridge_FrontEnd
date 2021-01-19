@@ -68,7 +68,7 @@ export const handleSetQuantity = (
   else err = null;
 
   const old = ingredientsState[index];
-  const updated = { ...old, quantity: value, quantityError: err };
+  const updated = { ...old, quantity: parseInt(value), quantityError: err };
   const clone = [...ingredientsState];
   clone[index] = updated;
 
@@ -229,6 +229,30 @@ export const handleSubmitPartial = async (
   setIngredientsState(newIngredients);
 };
 
+export const handleSubmitPartialAddProducts = async (
+  schema,
+  ingredientsState,
+  setIngredientsState
+) => {
+  const cloneIngredients = [...ingredientsState];
+  const quantities = cloneIngredients.map((i) => i.quantity);
+  const values = {
+    quantities: quantities,
+  };
+  let schemaErrors = await validateForm(schema, values);
+
+  const newIngredients = [];
+  cloneIngredients.forEach((i) => {
+    newIngredients.push({
+      ...i,
+      quantityError: schemaErrors[`quantities[${i.id}]`] ?? "",
+      quantityTouched: true,
+    });
+  });
+
+  setIngredientsState(newIngredients);
+};
+
 export const checkValidation = async (
   schema,
   textInputState,
@@ -252,6 +276,23 @@ export const checkValidation = async (
   );
 };
 
+export const checkValidationAddProducts = async (schema, ingredientsState) => {
+  const cloneIngredients = [...ingredientsState];
+
+  const quantities = cloneIngredients.map((i) => i.quantity);
+  const values = {
+    quantities: [...quantities],
+  };
+  const schemaErrors = await validateForm(schema, values)
+    .then((e) => e)
+    .catch();
+
+  return (
+    Object.keys(schemaErrors).length === 0 &&
+    schemaErrors.constructor === Object
+  );
+};
+
 export const prepareIngredients = (ingredients) => {
   const currentIngredients = [];
   ingredients.forEach((i) => {
@@ -261,4 +302,27 @@ export const prepareIngredients = (ingredients) => {
     });
   });
   return currentIngredients;
+};
+
+export const handleChangePage = (pagination, setPagination) => (direction) => {
+  if (direction === "prev" && pagination.page > 0) {
+    setPagination({
+      ...pagination,
+      page: pagination.page - 1,
+    });
+  } else if (direction === "next") {
+    setPagination({
+      ...pagination,
+      page: pagination.page + 1,
+    });
+  }
+};
+
+export const calculateCookingTime = (cookingTime) => {
+  const hours = Math.floor(cookingTime / 60);
+  if (hours > 0)
+    return `${hours} ${hours === 1 ? "hour" : "hours"} ${
+      cookingTime - hours * 60
+    } ${cookingTime - hours * 60 === 1 ? "minute" : "minutes"}`;
+  else return `${cookingTime} ${cookingTime === 1 ? "minute" : "minutes"}`;
 };

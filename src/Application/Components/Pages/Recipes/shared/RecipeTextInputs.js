@@ -20,7 +20,7 @@ const RecipeTextInputs = React.memo(
             error={errors?.name}
           />
           <InputField
-            value={values.cookingTime}
+            value={values.cookingTime.toString()}
             onChange={handleSetValue}
             handleOnBlur={handleOnBlur}
             name="cookingTime"
